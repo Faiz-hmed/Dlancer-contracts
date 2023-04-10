@@ -1,0 +1,41 @@
+pages/index (signup page):              --->Keep this as signup 
+    GET req: {string walletid}  resp: true/false            ---> Create with signin keyword in url
+    POST req: {string email, string username, string walletid,string bio,string location, array(skills) }
+
+
+pages/users (users list page):  (For search bar)
+    GET req: query string
+        res: array of [{string name, string walletid, int tasks, int completed, array skills}]
+    
+
+pages/users/[walletid]:
+    GET req: {string walletid}
+        res: {string username, string bio, string walletid, int Assignedtasks, int completed, string location, array skills, array(projects{title, tasks,collaborators,array(skills),bool status}), array(certificates({string title, string org, string link}))} 
+
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+pages/req                                   ---User Requests and Invites for contribution
+    GET req: {string walletid}                      //GET Request to check the  invites/requests of user
+    POST req: {int requestid, bool accepted}        //POST request made by 'accepting' user of reqest/invite.    This should actually be a DELETE req
+
+    POST req: {string senderid, string receiverid, string projectid}          //POST request made by 'requesting' user for collaboration/ as invitation
+         (goes to request list of the receiver)
+
+    
+
+<!---  POST req: {string username, string bio, string email, string location, array(skills)}   --->       //NOT NECESSARY `FOR NOW`
+
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+pages/projects
+    GET req: {string walletid}
+        res:{assigned:array(projects{title, tasks,collaborators,array(skills),bool status}),owned:array(projects{title, tasks,collaborators,array(skills),bool status})}                    //Why array(skills)?? Make separate req to users endpoint, if required.
+
+    POST req: {string name,string description, array(string skills), string walletid}
+
+pages/projects/[projectid]
+    GET req:{string projectid}
+        res:{string description,array(collaborators id), array(task{int taskid, string remainingTime, int reward })}
