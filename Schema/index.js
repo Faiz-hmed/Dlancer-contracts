@@ -5,6 +5,10 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    projects : {
+        type: [mongoose.SchemaTypes.ObjectId],
+        ref: 'Projects'
+    },
     email:{
         type: String,
         required: true,
@@ -26,19 +30,33 @@ const userSchema = new mongoose.Schema({
         ref: 'Certifications'
     },
     
-    requests: {
+    requests: {  //Keeps track of only the requests 'received'
         type: [mongoose.SchemaTypes.ObjectId],
-        ref: 'Users'
+        ref: 'Requests'
     },
     skills: [String]
 });
+const reqSchema = new mongoose.Schema({
+    user: {     // User who sent the request [From POV of Receiving user]
+        type: mongoose.SchemaTypes.ObjectId,
+        ref: 'Users',
+        required: true
+    },
+    project: {
+        type: mongoose.SchemaTypes.ObjectId,
+        ref: 'Projects'
+    }
 
-// TODO: Add the Requests Schema -  Done
+});
 
 const projectSchema = new mongoose.Schema({
     ownerID: {
         type: mongoose.SchemaTypes.ObjectId,
         ref: 'Users',
+        required: true
+    },
+    projectName: {
+        type: String,
         required: true
     },
     tasks: {
@@ -92,6 +110,7 @@ const certSchema = new mongoose.Schema({
 });
 
 
+module.exports.Requests=mongoose.model('Requets', reqSchema);
 module.exports.Users = mongoose.model('Users', userSchema);
 module.exports.Projects = mongoose.model('Projects', projectSchema);
 module.exports.Tasks = mongoose.model('Tasks', tasksSchema);
