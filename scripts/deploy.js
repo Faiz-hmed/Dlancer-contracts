@@ -20,7 +20,8 @@ async function main() {
   );
   await taskContract.deployed();
   console.log("TaskContract deployed to:", taskContract.address);
-  const activated  = await taskContract.connect(owner).activateTask(reward,{ value: amount});
+  const activated = await taskContract.activateTask(reward,{value:amount});
+  // const activated  = await taskContract.connect(owner).activateTask(reward,{ value: amount});
   await taskContract.deployTransaction.wait(1);
   console.log(activated);
   // const completetrans = await taskContract.connect(employee).completeTask();

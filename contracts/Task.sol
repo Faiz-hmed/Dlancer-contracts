@@ -1,18 +1,4 @@
 // SPDX-License-Identifier: MIT
-// pragma solidity ^0.8.8;
-
-
-// contract fundme{
-//     uint256 minprice = 50*10e18;
-//     function fund() public payable{
-//         require(msg.value>=minprice,"dint get enough");
-//     }
-//     function getversion() public view returns(uint256){
-//         return minprice;
-//     }
-// }
-
-
 
 pragma solidity ^0.8.8;
 
@@ -24,19 +10,43 @@ contract TaskContract {
     string public taskDescription;
     bool public completed;
     bool public cancelled;
-    constructor(address _employee, uint _reward, uint _deadline, string memory _taskDescription) payable {
-        employer = msg.sender;
+    bool public activated;
+    constructor(address _employee, uint _reward, uint _deadline,address _employer, string memory _taskDescription) payable {
+        employer = _employer;
         employee = _employee;
         reward = _reward;
         deadline = _deadline;
         taskDescription = _taskDescription;
         completed = false;
         cancelled = false;
+        activated = false;
     }
 
-    function activateTask(uint _reward) public payable {
-        reward = _reward;
-        require(msg.value == _reward, "Amount sent must be equal to the reward");
+    function activateTask() public payable {
+        require(msg.value == reward, "Amount sent must be equal to the reward");
+        require(msg.sender == employer, "Only hirer can activate the task");
+        require(activated == false, "Task already activated");
+        activated = true;
+    }
+
+    function isCompleted() public view returns(bool){
+        return completed;
+    }
+
+    function viewReward() public view returns(uint256){
+        return reward;
+    }
+
+    function isActivated() public view returns(bool){
+        return activated;
+    }
+
+    function isCancelled() public view returns(bool){
+        return cancelled;
+    }
+
+    function getDescription() public view returns(string memory){
+        return taskDescription;
     }
 
     function completeTask() public {

@@ -9,9 +9,10 @@ const {deployer,hirer,freelancer} = await getNamedAccounts();
 // const employer = ethers.provider.getSigner(hirer);
 const reward = ethers.utils.parseEther("1"); // set the reward to 1 ETH
 const amount = ethers.utils.parseEther("1"); // set the reward to 1 ETH
-// const token = await ethers.getContract("TaskContract",hirer)
-const token = await ethers.getContractAt("TaskContract",getLatestAddress(),hirer)
-const tok = await token.isActivated();
+const token = await ethers.getContractAt("TaskContract",getLatestAddress(),freelancer)
+console.log(await token.isCancelled());
+const tok = await token.cancelTask();
+console.log(await token.isCancelled());
 // const tok = await token.activateTask(amount,{value:amount});
 // const tok = await token.isCompleted();
 console.log(tok);

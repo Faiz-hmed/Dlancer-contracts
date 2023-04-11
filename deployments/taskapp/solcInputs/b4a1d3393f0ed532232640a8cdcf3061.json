@@ -1,0 +1,35 @@
+{
+  "language": "Solidity",
+  "sources": {
+    "contracts/Task.sol": {
+      "content": "// SPDX-License-Identifier: MIT\n// pragma solidity ^0.8.8;\n\n\n// contract fundme{\n//     uint256 minprice = 50*10e18;\n//     function fund() public payable{\n//         require(msg.value>=minprice,\"dint get enough\");\n//     }\n//     function getversion() public view returns(uint256){\n//         return minprice;\n//     }\n// }\n\n\n\npragma solidity ^0.8.8;\n\ncontract TaskContract {\n    address public employer;\n    address public employee;\n    uint256 public reward;\n    uint256 public deadline;\n    string public taskDescription;\n    bool public completed;\n    bool public cancelled;\n    constructor(address _employee, uint _reward, uint _deadline, string memory _taskDescription) payable {\n        employer = msg.sender;\n        employee = _employee;\n        reward = _reward;\n        deadline = _deadline;\n        taskDescription = _taskDescription;\n        completed = false;\n        cancelled = false;\n    }\n\n    function activateTask(uint _reward) public payable {\n        reward = _reward;\n        require(msg.value == _reward, \"Amount sent must be equal to the reward\");\n    }\n\n    function completeTask() public {\n        // require(msg.sender == employee, \"Only the employee can complete the task\");\n        require(block.timestamp <= deadline, \"Deadline has passed\");\n        require(!cancelled, \"Task has been cancelled\");\n\n        completed = true;\n        payable(employee).transfer(reward);\n    }\n\n    function cancelTask() public {\n        require(msg.sender == employee, \"Only the employee can cancel the task\");\n        require(!completed, \"Task has already been completed\");\n\n        cancelled = true;\n        payable(employer).transfer(reward);\n    }\n}\n"
+    }
+  },
+  "settings": {
+    "optimizer": {
+      "enabled": false,
+      "runs": 200
+    },
+    "outputSelection": {
+      "*": {
+        "*": [
+          "abi",
+          "evm.bytecode",
+          "evm.deployedBytecode",
+          "evm.methodIdentifiers",
+          "metadata",
+          "devdoc",
+          "userdoc",
+          "storageLayout",
+          "evm.gasEstimates"
+        ],
+        "": [
+          "ast"
+        ]
+      }
+    },
+    "metadata": {
+      "useLiteralContent": true
+    }
+  }
+}

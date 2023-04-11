@@ -7,14 +7,11 @@ async function main(){
 // const TaskContract = await ethers.getContractFactory("TaskContract");
 const {deployer,hirer,freelancer} = await getNamedAccounts();
 // const employer = ethers.provider.getSigner(hirer);
-const reward = ethers.utils.parseEther("1"); // set the reward to 1 ETH
-const amount = ethers.utils.parseEther("1"); // set the reward to 1 ETH
-// const token = await ethers.getContract("TaskContract",hirer)
+const reward = ethers.utils.parseEther("0.02"); // set the reward to 1 ETH
 const token = await ethers.getContractAt("TaskContract",getLatestAddress(),hirer)
-const tok = await token.isActivated();
-// const tok = await token.activateTask(amount,{value:amount});
-// const tok = await token.isCompleted();
-console.log(tok);
+console.log(await token.isActivated());
+const tok = await token.activateTask({value:reward});
+console.log(await token.isActivated());
 };
 main()
   .then(() => process.exit(0))
