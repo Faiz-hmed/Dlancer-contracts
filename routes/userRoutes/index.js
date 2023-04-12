@@ -41,7 +41,6 @@ router.post("/signup", async (req, res) => {
     }
 });
 
-// TODO : Add code to store certs 
 router.post("/certs", async (req, res) => {
     const userId = req.body.userid;
     const ipfsHash = req.body.ipfsHash;
