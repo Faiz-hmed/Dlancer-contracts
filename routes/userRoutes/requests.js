@@ -15,7 +15,7 @@ router.get("/req/:userid", async (req, res) => {
         return res.status(400).send({ success: false, message: 'User not found!' });
     }
 
-    // May require project name in frontend(to display in requests page), hence populating project
+    // May require 'project name' in frontend(to display in requests page), hence populating project
     const requests = user.requests.map(async request => {
         const pReq = await request.populate('project');
         return pReq;
@@ -56,7 +56,7 @@ router.post('/req', async (req, res) => {
     }
 });
 
-router.delete('/req', async (req, res) => {
+router.post('/req', async (req, res) => {
     // Endpoint to handle accept/reject-ing of requests
 
     const requestId = req.body.requestId;
@@ -91,7 +91,9 @@ router.delete('/req', async (req, res) => {
             
             initiatorUser.projects.push(project.id);
         }
+
+        return res.send({ success: true, message: 'Request accepted!' });
     }
     
-
+    return res.send({ success: true, message: 'Request rejected!' });
 });

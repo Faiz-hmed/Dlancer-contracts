@@ -30,7 +30,7 @@ pages/req                                   ---User Requests and Invites for con
 -----------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
-pages/projects
+pages/projects                      // Belongs in the user Routes
     GET req: {string walletid}
         res:{assigned:array(projects{title, tasks,collaborators,array(skills),bool status}),owned:array(projects{title, tasks,collaborators,array(skills),bool status})}                    //Why array(skills)?? Make separate req to users endpoint, if required.
 

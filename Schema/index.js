@@ -55,6 +55,9 @@ const projectSchema = new mongoose.Schema({
         ref: 'Users',
         required: true
     },
+    requiredSkills:{
+        type: [String],
+    },
     projectName: {
         type: String,
         required: true
@@ -102,15 +105,18 @@ const certSchema = new mongoose.Schema({
         ref: 'Users',
         required: true
     },
+    ipfsHash: {
+        type: String,
+        required: true
+    },
     orgIssued: {
         type: String,
         required: true,
-    },
-    link: String
+    }
 });
 
 
-module.exports.Requests=mongoose.model('Requets', reqSchema);
+module.exports.Requests = mongoose.model('Requets', reqSchema);
 module.exports.Users = mongoose.model('Users', userSchema);
 module.exports.Projects = mongoose.model('Projects', projectSchema);
 module.exports.Tasks = mongoose.model('Tasks', tasksSchema);
