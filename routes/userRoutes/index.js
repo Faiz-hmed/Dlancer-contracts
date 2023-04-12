@@ -118,3 +118,4 @@ router.get("/:userid", async (req, res) => {
     return res.status(200).send(userDet);
 });
 
+module.exports = router;

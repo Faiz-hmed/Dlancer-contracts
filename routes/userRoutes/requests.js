@@ -97,3 +97,5 @@ router.post('/req', async (req, res) => {
     
     return res.send({ success: true, message: 'Request rejected!' });
 });
+
+module.exports = router;

@@ -41,6 +41,21 @@ router.post('/', async (req, res) => {
     await taskInsert(tasks, proj.id, res);
 });
 
+// Task Req body: {projid, name, starttime, endtime, description, status(true/false)}
+router.post('/tasks', async (req, res) => {
+    // Endpoint to add tasks to a project
+    // Request Body : {projid, tasks(array)}
+
+    const tasks = req.body.tasks;
+    const projid = req.body.projid;
+
+    if(tasks == undefined || projid == undefined){
+        res.status(400).send({ success: false, message: 'Project ID and Tasks must be present!' });
+    }
+
+    await taskInsert(tasks, projid, res);
+});
+
 async function taskInsert(tasks, projid, res){
 
     for(let i = 0; i < tasks.length; i++){
@@ -50,13 +65,26 @@ async function taskInsert(tasks, projid, res){
         }
     }
 
-    const tasks = tasks.map(task => {return {projid : projid, ...task}});
+    const qtasks = tasks.map(task => {return {projid : projid, ...task}});
     try{
-        await taskModel.insertMany(tasks);
+        await taskModel.insertMany(qtasks);
     }catch(err){
         return res.status(400).send({ success: false, message: err.message });
     }
 
     return res.status(200).send({ success: true, message: 'Tasks added successfully!' });
 }
-// Task Req body: {projid, name, starttime, endtime, description, status(true/false)}
+
+router.get('/:projectid', async (req, res) => {
+    const projectid = req.params.projectid;
+
+    const projDetail = await projectModel.find({id: projectid}).populate('tasks').exec();
+
+    if(projDetail === null){
+        return res.status(400).send({ success: false, message: 'Project not found!' });
+    }
+
+    return res.status(200).send(projDetail);
+});
+
+module.exports = router;
