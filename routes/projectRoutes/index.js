@@ -7,25 +7,26 @@ const projectModel = Models.Projects;
 const taskModel = Models.Tasks;
 const requestsModel = Models.Requests;
 
+// TODO: Create endpoint to add users to a project
+
 router.post('/', async (req, res) => {
     // Enpoint to create a new project w/o tasks
-    // Request Body : {userid, Proj name, description, skills, tasks, status}
+    
+    //Request Body : {userid, projName, description, skills, tasks, status(0/1/2) }
 
     const userid = req.body.userid;
     const projName = req.body.projName;
     const description = req.body.description;
     const skills = req.body.skills;
+    const tasks = req.body.tasks;
     const status = req.body.status;
 
     if(!Array.isArray(skills)){
-        if(tasks && !Array.isArray(tasks)){
-            return res.status(400).send({ success: false, message: 'Skills/Tasks must be an array!' });
-        }
-
         return res.status(400).send({ success: false, message: 'Skills must be an array!' });
     }
 
     const proj = new projectModel({ownerID: userid, projectName: projName, description: description, requiredSkills: skills, status: status});
+    // TODO: Add the project into the user's projects array
 
     try{
         proj.save();
@@ -57,6 +58,11 @@ router.post('/tasks', async (req, res) => {
 });
 
 async function taskInsert(tasks, projid, res){
+    // Function to handle task creation
+
+    if(!Array.isArray(tasks)){
+        return res.status(400).send({ success: false, message: 'Tasks must be an array!' });
+    }
 
     for(let i = 0; i < tasks.length; i++){
         const task = tasks[i];
@@ -67,7 +73,8 @@ async function taskInsert(tasks, projid, res){
 
     const qtasks = tasks.map(task => {return {projid : projid, ...task}});
     try{
-        await taskModel.insertMany(qtasks);
+        await taskModel.insertMany(qtasks);                         // might need to do: sequential task insertion
+        // TODO: Add the tasks to the project's tasks array
     }catch(err){
         return res.status(400).send({ success: false, message: err.message });
     }

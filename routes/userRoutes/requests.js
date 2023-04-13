@@ -27,9 +27,11 @@ router.get("/req/:userid", async (req, res) => {
 router.post('/req', async (req, res) => {
     // Endpoint to send requests
 
-    const initiatingUserId = req.body.initiatorId;       
+    // Request body: {initiatorId (userid), resolverId (userid), projectId}
+
+    const initiatingUserId = req.body.initiatorId;
     const resolvingUserId = req.body.resolverId;
-    const projectId = req.body.projectId;           // TODO: Use initiator and resolver keywords to identify the users
+    const projectId = req.body.projectId;           // TODO: Use initiator and resolver keywords to identify the users (sending and receiving)
 
     const resolverUser = await userModel.findOne({walletID: resolvingUserId}).exec();
     const requestedProject = await projectModel.findOne({id: projectId}).exec();
@@ -58,6 +60,8 @@ router.post('/req', async (req, res) => {
 
 router.post('/req', async (req, res) => {
     // Endpoint to handle accept/reject-ing of requests
+
+    //Request body: {requestId, resolverId(userid) , result}
 
     const requestId = req.body.requestId;
     const resolvingUserId = req.body.resolverId;

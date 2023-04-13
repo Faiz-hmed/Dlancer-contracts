@@ -117,7 +117,7 @@ const certSchema = new mongoose.Schema({
 });
 
 
-module.exports.Requests = mongoose.model('Requets', reqSchema);
+module.exports.Requests = mongoose.model('Requests', reqSchema);
 module.exports.Users = mongoose.model('Users', userSchema);
 module.exports.Projects = mongoose.model('Projects', projectSchema);
 module.exports.Tasks = mongoose.model('Tasks', tasksSchema);

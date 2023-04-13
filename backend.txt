@@ -40,5 +40,6 @@ pages/projects/[projectid]
     GET req:{string projectid}
         res:{string description,array(collaborators id), array(task{int taskid, string remainingTime, int reward })}
 
-// Needs task add endpoints
-// Needs task submit endpoints ('completed' to be made true)
+// Needs task add endpoints             - Done
+// Needs task submit endpoints ('completed' to be made true)    - Todo
+// Needs collaborator add endpoint - Todo
