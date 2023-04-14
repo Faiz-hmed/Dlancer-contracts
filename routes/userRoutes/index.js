@@ -5,15 +5,15 @@ const userModel = Models.Users;
 const projectModel = Models.Projects;
 const certModel = Models.Certifications;
 
-router.get("/login/:userid", async (req, res) => {
+router.get("/signin/:walletid", async (req, res) => {
     // Endpoint to check if user is registered
 
     // Check for user in DB
-    const userId = req.params.userid;
-    const registeredUser = await userModel.findOne({walletID: userId}).exec();
+    const walletid = req.params.walletid;
+    const registeredUser = await userModel.findOne({walletID: walletid}).exec();
 
     if(registeredUser !== null){
-        return res.status(200).send({ success: true, message: 'User Registered' });
+        return res.status(200).send({ _id: registeredUser.id, success: true, message: 'User Registered' });
     }
     else{
         return res.status(400).send({ success: false, message: 'User not registered!' });
@@ -27,7 +27,7 @@ router.post("/signup", async (req, res) => {
     const user = new userModel(req.body);
 
     try{
-        user.save();
+        await user.save();
 
         return res.status(200).send({ success: true, message: 'User Registered' });
     }catch(err){
@@ -37,7 +37,7 @@ router.post("/signup", async (req, res) => {
         }
         if(err.name === 'ValidationError'){
             // Check if any of the fields fail schema validation
-            console.log(err.message)
+            
             return res.status(400).send({ success: false, message: 'Invalid Data' });
         }
     }
@@ -59,13 +59,15 @@ router.post("/certs", async (req, res) => {
     }
 
     const cert = new certModel({user: certOwnerUser.id, ipfsHash: ipfsHash, orgIssued: orgIssued});
-    // TODO: Add the certificate to the user's list of certificates
+    certOwnerUser.certifications.push(cert.id);
+    
+    // TODO: Add the certificate to the user's list of certificates - DONE
 
     try{
-        cert.save();
+        await Promise.all([cert.save(), certOwnerUser.save()]);
 
         return res.status(200).send({ success: true, message: 'Certificate added successfully!' });
-    } catch(err){
+    }catch(err){
         if(err.name === 'ValidationError'){
             // Check if any of the fields fail schema validation (if required fields are not present)
             
@@ -74,26 +76,27 @@ router.post("/certs", async (req, res) => {
     }
 });
 
-router.get('/projects/:userid', async (req, res) => {
+router.get('/:userid/projects', async (req, res) => {
     // Endpoint to get all projects by a user(categorised as owned and assigned)
-    
+
     const userId = req.params.userid;
     let user;
 
     try{
-        user = await userModel.findOne({ _id : userId }, 'projects');        
+        user = await userModel.findOne({ _id : userId });
+ 
+        if(user == null){
+            return res.status(400).send({ success: false, message: 'User not found' });
+        }
     }
     catch(err){
         if(err.name === 'CastError'){
             return res.status(400).send({ success: false, message: 'Invalid UserId' });
         }
+        return res.status(400).send({ success: false, message: 'Error occured' });
     }
-    
-    const allUserProjectIds = user.projects;
 
-    if(allUserProjectIds == undefined){
-        return res.status(400).send({ success: false, message: 'No Such User found!' });
-    }
+    const allUserProjectIds = user.projects.map(projectid => String(projectid));
 
     const userOwnedProjectDetails = await projectModel.find({ownerID: userId}).exec();
     const userOwnedProjects = userOwnedProjectDetails.map(project => project.id);
@@ -118,12 +121,20 @@ router.get("/", async (req, res) => {
 });
 
 router.get("/:userid", async (req, res) => {
-    // Endpoint to retieve user details
+    // Endpoint to retieve user details (Projects as id)
 
     const userId = req.params.userid;
-    const user = await userModel.findOne({_id: userId}).exec();
+    let user;
+    try {
+        user = await userModel.findOne({_id: userId}).exec();         // TODO: handle CastError in case of fallthrough from project route - Done
+    } catch(err){
+        if(err.name === 'CastError'){
+            return res.status(400).send({ success: false, message: 'Invalid UserId' });
+        }
+        return res.status(400).send({ success: false, message: 'Error occured' });
+    }
     
-    await user.populate(['projects','certs','requests']);
+    await user.populate(['certs','requests']);
 
     if(user === null){
         return res.status(400).send({ success: false, message: 'User not found!' });

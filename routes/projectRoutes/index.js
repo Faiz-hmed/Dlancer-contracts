@@ -11,7 +11,7 @@ const requestsModel = Models.Requests;
 
 router.post('/', async (req, res) => {
     // Enpoint to create a new project w/o tasks
-    
+
     //Request Body : {userid, projName, description, skills, tasks, status(0/1/2) }
 
     const userid = req.body.userid;
@@ -21,18 +21,22 @@ router.post('/', async (req, res) => {
     const tasks = req.body.tasks;
     const status = req.body.status;
 
+    const user = await userModel.findById(userid).exec();
+
     if(!Array.isArray(skills)){
         return res.status(400).send({ success: false, message: 'Skills must be an array!' });
     }
 
     const proj = new projectModel({ownerID: userid, projectName: projName, description: description, requiredSkills: skills, status: status});
-    // TODO: Add the project into the user's projects array
+    user.projects.push(proj.id);
+
+    // TODO: Add the project into the user's projects array - DONE
 
     try{
-        proj.save();
-    }catch(err){
+        await Promise.all([proj.save(), user.save()]);
 
-        return res.status(400).send({ success: false, message: err.message });
+    }catch(err){
+        return res.status(400).send({ success: false, message: err.message+err.name });
     }
 
     //Save Project to db, and continue if and only if successful && tasks are present
@@ -42,39 +46,44 @@ router.post('/', async (req, res) => {
     await taskInsert(tasks, proj.id, res);
 });
 
-// Task Req body: {projid, name, starttime, endtime, description, status(true/false)}
 router.post('/tasks', async (req, res) => {
     // Endpoint to add tasks to a project
-    // Request Body : {projid, tasks(array)}
+    //Request Body : {projid, tasks(array)}
 
     const tasks = req.body.tasks;
     const projid = req.body.projid;
 
     if(tasks == undefined || projid == undefined){
-        res.status(400).send({ success: false, message: 'Project ID and Tasks must be present!' });
+        return res.status(400).send({ success: false, message: 'Project ID and Tasks must be present!' });
     }
 
     await taskInsert(tasks, projid, res);
 });
 
+// Task Req body: {projid, taskName, starttime, endtime, description, isCompleted(true/false)}
 async function taskInsert(tasks, projid, res){
     // Function to handle task creation
+
+    const project = await projectModel.findById(projid).exec();
 
     if(!Array.isArray(tasks)){
         return res.status(400).send({ success: false, message: 'Tasks must be an array!' });
     }
 
-    for(let i = 0; i < tasks.length; i++){
-        const task = tasks[i];
-        if(!task.hasOwnProperty('name') && !task.hasOwnProperty('description') && !task.hasOwnProperty('startTime') && !task.hasOwnProperty('endTime') && !task.hasOwnProperty('status')){
+    for(const task of tasks){
+        if(!task.hasOwnProperty('taskName') && !task.hasOwnProperty('description') && !task.hasOwnProperty('startTime') && !task.hasOwnProperty('endTime') && !task.hasOwnProperty('isCompleted')){
             return res.status(400).send({ success: false, message: 'Task must have name, description and endTime!' });
         }
     }
 
-    const qtasks = tasks.map(task => {return {projid : projid, ...task}});
+    const qtasks = tasks.map(task => {return {projectID : projid, ...task}});
+
     try{
-        await taskModel.insertMany(qtasks);                         // might need to do: sequential task insertion
-        // TODO: Add the tasks to the project's tasks array
+        const retTasks = await taskModel.insertMany(qtasks);                         // might need to do: sequential task insertion
+        
+        project.tasks = project.tasks.concat(retTasks.map(task => task.id));
+
+        await project.save();
     }catch(err){
         return res.status(400).send({ success: false, message: err.message });
     }
@@ -85,7 +94,7 @@ async function taskInsert(tasks, projid, res){
 router.get('/:projectid', async (req, res) => {
     const projectid = req.params.projectid;
 
-    const projDetail = await projectModel.find({id: projectid}).populate('tasks').exec();
+    const projDetail = await projectModel.findOne({_id: projectid}).populate('tasks').exec();
 
     if(projDetail === null){
         return res.status(400).send({ success: false, message: 'Project not found!' });
@@ -93,5 +102,6 @@ router.get('/:projectid', async (req, res) => {
 
     return res.status(200).send(projDetail);
 });
+
 
 module.exports = router;
