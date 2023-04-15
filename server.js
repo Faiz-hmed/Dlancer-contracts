@@ -5,18 +5,15 @@ mongoose.connect('mongodb://localhost:27017/DLancer', {useNewUrlParser: true, us
 
 const userRoutes = require('./routes/userRoutes/index.js');
 const reqRoutes = require('./routes/userRoutes/requests.js');
+const projRoutes = require('./routes/projectRoutes/index.js');
 
-const app =  express();
+const app = express();
 
 app.use(express.json());
 
 app.use("/api/users", userRoutes);
 app.use("/api/req", reqRoutes);
-
-// app.get('/', (req, res) => {
-//     res.send('Hello World');
-// });
-
+app.use("/api/projects", projRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, function () {
