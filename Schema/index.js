@@ -45,8 +45,11 @@ const reqSchema = new mongoose.Schema({
     project: {
         type: mongoose.SchemaTypes.ObjectId,
         ref: 'Projects'
-    }
-
+    },
+    // mode:{      // To specify if the request is to invite for collaboration or apply for project
+    //     type:Number,
+    //     default:0,
+    // } 
 });
 
 const projectSchema = new mongoose.Schema({
@@ -54,6 +57,9 @@ const projectSchema = new mongoose.Schema({
         type: mongoose.SchemaTypes.ObjectId,
         ref: 'Users',
         required: true
+    },
+    requiredSkills:{
+        type: [String],
     },
     projectName: {
         type: String,
@@ -78,11 +84,16 @@ const tasksSchema = new mongoose.Schema({
     projectID: {
         type: mongoose.SchemaTypes.ObjectId,
         ref: 'Projects',
+        required: true
     },
     taskName: {
         type: String,
         required: true
     },
+    // contractAddress: {    // For storing the contract address of the task
+    //     type: String,
+    //     required:true
+    // },
     startTime: {
         type: Date
     },
@@ -102,15 +113,22 @@ const certSchema = new mongoose.Schema({
         ref: 'Users',
         required: true
     },
+    // ipfsHash: {   // certification verification removed, so no need for this 
+    //     type: String,
+    //     required: true
+    // },
+    link:{
+        type:String,
+        required:true
+    },
     orgIssued: {
         type: String,
         required: true,
-    },
-    link: String
+    }
 });
 
 
-module.exports.Requests=mongoose.model('Requets', reqSchema);
+module.exports.Requests = mongoose.model('Requests', reqSchema);
 module.exports.Users = mongoose.model('Users', userSchema);
 module.exports.Projects = mongoose.model('Projects', projectSchema);
 module.exports.Tasks = mongoose.model('Tasks', tasksSchema);

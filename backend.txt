@@ -30,8 +30,8 @@ pages/req                                   ---User Requests and Invites for con
 -----------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
-pages/projects
-    GET req: {string walletid}
+pages/projects                      
+    GET req: {string walletid}          // Belongs in the user Routes, retrieves all projects of user
         res:{assigned:array(projects{title, tasks,collaborators,array(skills),bool status}),owned:array(projects{title, tasks,collaborators,array(skills),bool status})}                    //Why array(skills)?? Make separate req to users endpoint, if required.
 
     POST req: {string name,string description, array(string skills), string walletid}
@@ -39,3 +39,10 @@ pages/projects
 pages/projects/[projectid]
     GET req:{string projectid}
         res:{string description,array(collaborators id), array(task{int taskid, string remainingTime, int reward })}
+
+// Needs task add endpoints             - Done
+// Needs task submit endpoints ('completed' to be made true)    - Todo
+// Needs collaborator add endpoint - Todo
+
+//For  adding task, include contractAddress field 
+//For all get requests involving tasks, add contractAddress field 

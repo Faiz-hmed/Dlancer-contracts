@@ -8,7 +8,6 @@ const {deployer,hirer,freelancer} = await getNamedAccounts();
 
 const busdContract = await ethers.getContractFactory("MockBUSD");
 const busdToken = await busdContract.attach("0x21E0F5d54E45CE43f465a19AA3668F03be118CfC");
-console.log(busdContract.interface.format(ethers.utils.FormatTypes.json))
 // console.log(busdToken)
 // Approve the TaskContract to spend BUSD tokens on your behalf
 
