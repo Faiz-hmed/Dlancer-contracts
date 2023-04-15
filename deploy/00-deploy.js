@@ -14,15 +14,17 @@ module.exports = async ({ deployments }) => {
       freelancer,
       amount,
       Math.floor(Date.now() / 1000) + 3600,
-      hirer
+      hirer,
+      "A very cool task"
     ],
     chainId:1337,
     value:amount,
     log: true,
   });
-  const token = await ethers.getContract("TaskContract")
+  console.log(taskContract)
+  // const token = await ethers.getContract("TaskContract")
   // const t = await token.activateTask(amount,{value:amount});
-  console.log(taskContract);
+  // console.log(taskContract);
 };
 
 

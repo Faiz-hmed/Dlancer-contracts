@@ -2,7 +2,7 @@
 
 pragma solidity ^0.8.8;
 
-contract TaskContract {
+contract askContract {
     address public employer;
     address public employee;
     uint256 public reward;

@@ -1,52 +1,32 @@
-// const { connect } = require('@aragon/connect')
-// const { Voting } = require('@aragon/connect-thegraph-voting')
+const { ethers,network, getNamedAccounts } = require("hardhat");
+const {getLatestAddress} = require('../helpers');
 
-// async function main() {
-//   // Connect to the DAO
-//   const org = await connect('web-dev.dao.eth', 'thegraph')
+async function main(){
 
-//   // Get the Voting app
-//   const votingApp = await org.app('voting.aragonpm.eth')
+const {deployer,hirer,freelancer} = await getNamedAccounts();
+const busdContract = await ethers.getContractFactory("MockBUSD");
+const busdToken = await busdContract.attach("0x21E0F5d54E45CE43f465a19AA3668F03be118CfC");
+// await busdToken.mint(deployer, ethers.utils.parseUnits("10000"));
+// await busdToken.mint(freelancer,ethers.utils.parseUnits("10000"));
+// await busdToken.mint(hirer, ethers.utils.parseUnits("10000"));
+const provider = new ethers.providers.Web3Provider(window.ethereum);
+const signer = provider.getSigner();
 
-//   // Create a new proposal
-//   const vote = new Voting(votingApp.address, votingApp.provider)
-//   const proposalId = await vote.newVote(['Yes', 'No'], 'Should we do X?')
+console.log(signer)
+const dep = await hre.ethers.getSigners();
+const amount = ethers.utils.parseUnits("1000"); // 1000 BUSD tokens in 18 decimal places
+const taskContractAddr = getLatestAddress();
+// await busdToken.connect(dep[2]).approve(taskContractAddr, amount);
+// const task = await ethers.getContractAt("TaskContract",getLatestAddress(),hirer)
 
-//   console.log(`Created proposal with ID ${proposalId}`)
-// }
+// const done = await task.activateTask();
 
-// main().catch(console.error)
-const Web3 = require('web3');
-const { getDefaultProvider } = require('@ethersproject/providers');
-const { utils } = require('ethers');
-const { DAOFactory } = require('@aragon/toolkit');
-
-// Instantiate web3
-const web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'));
-
-// Set up an account
-const privateKey = '0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef';
-const account = web3.eth.accounts.privateKeyToAccount(privateKey);
-web3.eth.accounts.wallet.add(account);
-
-// Set up DAO factory
-const provider = getDefaultProvider('rinkeby'); // Use a different network provider if needed
-const daoFactory = await DAOFactory.create({
-  web3,
-  provider,
-});
-
-// Set up DAO parameters
-const daoName = 'My DAO';
-const daoAvatar = 'https://ipfs.io/ipfs/QmXUUMk6xQ9XgBEivAFhRXV7MzR11NvuJ8WzYrGwPu7kqN';
-const daoInitializationParams = {
-  name: daoName,
-  avatar: daoAvatar,
-  tokenName: 'MyToken',
-  tokenSymbol: 'MT',
-  tokenDecimalPlaces: 18,
 };
+main()
+  .then(() => process.exit(0))
+  .catch(error => {
+    console.error(error);
+    process.exit(1);
+  });
 
-// Deploy DAO
-const dao = await daoFactory.newDAO(account.address, daoInitializationParams);
-console.log(`DAO deployed at ${dao.address}`);
+

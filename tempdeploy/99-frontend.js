@@ -5,8 +5,6 @@ const ABI_FILE = "../frontend/constants/abi.json";
 module.exports = async function(){
     if(process.env.UPDATE_FRONTEND){
         console.log("updating frontend");
-        // const contract  = await ethers.getContract("TaskContract");
-        // console.log(contract)
         await updateContractAdresses();
         await updateAbi();
     }
