@@ -1,6 +1,8 @@
 const express = require('express');
 const mongoose = require('mongoose');
 require('dotenv').config();
+const cors = require('cors');
+
 //Faiz database 
 // mongoose.connect('mongodb://localhost:27017/DLancer', {useNewUrlParser: true, useUnifiedTopology: true});
 //Shan database
@@ -13,7 +15,7 @@ const testRoutes = require('./routes/testingRoutes/index.js');
 const app = express();
 
 app.use(express.json());
-
+app.use(cors({origin:'*'}))
 app.use("/api/users", userRoutes);
 app.use("/api/req", reqRoutes);
 app.use("/api/projects", projRoutes);

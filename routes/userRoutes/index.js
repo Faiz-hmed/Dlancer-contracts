@@ -1,5 +1,5 @@
 const router = require('express').Router();
-
+const mongoose = require('mongoose')
 const Models = require('../../Schema/index.js');
 const userModel = Models.Users;
 const projectModel = Models.Projects;
@@ -24,7 +24,36 @@ router.post("/signup", async (req, res) => {
     // Endpoint to register/add a new user
 
     //Request Body : {walletID, username, email, bio, location, skills}
-    const user = new userModel(req.body);
+    const {walletID,username,email,bio,location,skills,certificates} = req.body;
+    const certIds = [];
+
+    for (const cert of certificates) {
+        const certEntry = new certModel({
+          title: cert.title,
+          link: cert.link,
+          org: cert.organization,
+        });
+    
+        try {
+          const savedCert = await certEntry.save();
+          certIds.push(savedCert._id);
+        } catch (err) {
+          console.error(err);
+          return res.status(500).send({ message: 'Failed to create certification entry.' });
+        }
+      }
+
+
+    const user = new userModel({
+        username:username,
+        email:email,
+        walletID:walletID,
+        bio:bio,
+        location:location,
+        skills:skills,
+        certs: certIds,
+      });
+    // const user = new userModel(req.body);
 
     try{
         await user.save();

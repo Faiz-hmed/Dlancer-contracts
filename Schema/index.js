@@ -108,9 +108,13 @@ const tasksSchema = new mongoose.Schema({
 });
 
 const certSchema = new mongoose.Schema({
-    ownerID: {
-        type: mongoose.SchemaTypes.ObjectId,
-        ref: 'Users',
+    // ownerID: {
+    //     type: mongoose.SchemaTypes.ObjectId,
+    //     ref: 'Users',
+    //     required: true
+    // },
+    title: {
+        type:String,
         required: true
     },
     // ipfsHash: {   // certification verification removed, so no need for this 
@@ -121,7 +125,7 @@ const certSchema = new mongoose.Schema({
         type:String,
         required:true
     },
-    orgIssued: {
+    org: {
         type: String,
         required: true,
     }
