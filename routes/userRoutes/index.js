@@ -143,7 +143,6 @@ router.get('/:userid/projects', async (req, res) => {
 
 router.get("/", async (req, res) => {           
     // Users list endpoint
-
     const users = await userModel.find({}).exec();
 
     return res.status(200).send(users);
