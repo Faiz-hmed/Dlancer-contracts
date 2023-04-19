@@ -16,7 +16,7 @@ router.get("/signin/:walletid", async (req, res) => {
         return res.status(200).send({ _id: registeredUser.id, success: true, message: 'User Registered' });
     }
     else{
-        return res.status(400).send({ success: false, message: 'User not registered!' });
+        return res.status(403).send({ success: false, message: 'User not registered!' });
     }
 });
 
