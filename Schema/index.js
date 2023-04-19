@@ -117,11 +117,11 @@ const tasksSchema = new mongoose.Schema({
 });
 
 const certSchema = new mongoose.Schema({
-    // ownerID: {
-    //     type: mongoose.SchemaTypes.ObjectId,
-    //     ref: 'Users',
-    //     required: true
-    // },
+    ownerID: {
+        type: mongoose.SchemaTypes.ObjectId,
+        ref: 'Users',
+        required: true
+    },
     title: {
         type:String,
         required: true

@@ -27,21 +27,7 @@ router.post("/signup", async (req, res) => {
     const {walletID,username,email,bio,location,skills,certificates} = req.body;
     const certIds = [];
 
-    for (const cert of certificates) {
-        const certEntry = new certModel({
-          title: cert.title,
-          link: cert.link,
-          org: cert.organization,
-        });
     
-        try {
-          const savedCert = await certEntry.save();
-          certIds.push(savedCert._id);
-        } catch (err) {
-          console.error(err);
-          return res.status(500).send({ message: 'Failed to create certification entry.' });
-        }
-      }
 
 
     const user = new userModel({
@@ -51,12 +37,32 @@ router.post("/signup", async (req, res) => {
         bio:bio,
         location:location,
         skills:skills,
-        certs: certIds,
+        certs: [],
       });
+
+      
     // const user = new userModel(req.body);
 
     try{
-        await user.save();
+        await user.save().then(async (saved)=>{
+            for (const cert of certificates) {
+                const certEntry = new certModel({
+                  ownerID: saved._id,
+                  title: cert.title,
+                  link: cert.link,
+                  org: cert.organization,
+                });
+                try {
+                  const savedCert = await certEntry.save();
+                  certIds.push(savedCert._id);
+                } catch (err) {
+                  console.error(err);
+                  return res.status(500).send({ message: 'Failed to create certification entry.' });
+                }
+              }
+             await userModel.findByIdAndUpdate(saved._id, { $set: { certs: certIds } } );
+
+        });
 
         return res.status(200).send({ success: true, message: 'User Registered' });
     }catch(err){
@@ -105,6 +111,19 @@ router.post("/certs", async (req, res) => {
     }
 });
 
+router.get("/certs/:walletid", async (req, res) => {           
+    // Users list endpoint
+    const walletID = req.params.walletid;
+    try{
+    const users = await userModel.findOne({walletID:walletID});
+    const userid = users._id;
+    const certs = await certModel.find({ownerID:userid})
+    return res.status(200).send(certs);
+    }catch(e){
+        return res.status(500).send({success:false,message:e.message})
+    }
+});
+
 router.get('/:userid/projects', async (req, res) => {
     // Endpoint to get all projects by a user(categorised as owned and assigned)
 
@@ -143,18 +162,19 @@ router.get('/:userid/projects', async (req, res) => {
 
 router.get("/", async (req, res) => {           
     // Users list endpoint
-    const users = await userModel.find({}).exec();
+    const users = await userModel.find({},{walletID:1,tasksCompleted:1,skills:1,image:1,username:1}).exec();
 
     return res.status(200).send(users);
 });
 
-router.get("/:userid", async (req, res) => {
+router.get("/:walletid", async (req, res) => {
     // Endpoint to retieve user details (Projects as id)
 
-    const userId = req.params.userid;
+    const walletid = req.params.walletid;
     let user;
     try {
-        user = await userModel.findOne({_id: userId}).exec();         // TODO: handle CastError in case of fallthrough from project route - Done
+        user = await userModel.findOne({walletID:walletid})
+        // user = await userModel.findOne({_id: userId}).exec();         // TODO: handle CastError in case of fallthrough from project route - Done
     } catch(err){
         if(err.name === 'CastError'){
             return res.status(400).send({ success: false, message: 'Invalid UserId' });
