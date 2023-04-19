@@ -34,7 +34,7 @@ const userSchema = new mongoose.Schema({
         type: [mongoose.SchemaTypes.ObjectId],
         ref: 'Requests'
     },
-    skills: [String]
+    skills: [Number]
 });
 const reqSchema = new mongoose.Schema({
     user: {     // User who sent the request [From POV of Receiving user]

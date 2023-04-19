@@ -11,16 +11,19 @@ async function main() {
  const {deployer,hirer,freelancer} = await getNamedAccounts();
  const TaskContract = await hre.ethers.getContractFactory("TaskContract");
 
-  // const TaskContract = await hre.ethers.getContractFactory("TaskContract");
   // const amount = ethers.utils.parseEther("0.02"); // send 1 ETH with the transaction
   const amount = ethers.utils.parseUnits("100")
+  const employee = freelancer
+  const deadline = Math.floor(Date.now() / 1000) + 3600;
+  const task_description="It is a cool task";
+
   const taskContract = await TaskContract.deploy(
-    freelancer,
-    amount,
-    Math.floor(Date.now() / 1000) + 3600,
-    hirer,
-    "A cool task for testing",
-    "0x21E0F5d54E45CE43f465a19AA3668F03be118CfC"
+    freelancer, // employee wallet address
+    amount, // reward amount in USD
+    deadline, //deadline 
+    hirer, //employer wallet address
+    task_description, // task description
+    "0x21E0F5d54E45CE43f465a19AA3668F03be118CfC" // BUSD contract address
   );
   await taskContract.deployed();
   console.log("TaskContract deployed to:", taskContract.address);
@@ -28,7 +31,6 @@ async function main() {
   
   const task = await ethers.getContractAt("TaskContract",getLatestAddress(),hirer)
   
-//   const activated = await task.activateTask(amount,{value:amount});
   const activated = await task.isActivated();
   await updateContractAdresses(taskContract.address);
   await updateAbi(TaskContract.interface.format(ethers.utils.FormatTypes.json));
