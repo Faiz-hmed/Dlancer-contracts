@@ -22,9 +22,10 @@ router.get("/signin/:walletid", async (req, res) => {
 });
 
 
+
 router.post("/edit/:walletID",async (req,res)=>{
     try{
-        const updatedUser = await userModel.findOneAndUpdate({walletID:req.params.walletID}, req.body, {new:true});
+        await userModel.findOneAndUpdate({walletID:req.params.walletID}, req.body, {new:true});
         res.status(200).json({success:true,message:"user updated"});
     }
     catch(e)
@@ -67,6 +68,20 @@ router.post("/signup", async (req, res) => {
         }
     }
 });
+
+router.post('/addcert/:walletID',async(req,res)=>{
+    try{
+        const user = await userModel.findOne({walletID:req.params.walletID}); // get the user object from the database using the user ID
+        user.certs.push(req.body); // add the new certificate to the user's certs array
+        await user.save();
+
+        res.status(200).json({success:true,message:"updated successfully"})
+
+    }catch(e){
+        console.error(e)
+        res.status(500).json({success:false,message:e.message})
+    }
+})
 
 router.post("/certs", async (req, res) => {
     // Endpoint to add a certificate to a user
