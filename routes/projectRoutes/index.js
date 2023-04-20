@@ -99,9 +99,27 @@ async function taskInsert(tasks, projid, res){
 
 router.get('/:projectid', async (req, res) => {
     const projectid = req.params.projectid;
+    const projDetail = await projectModel.findById(projectid)
+    .populate({
+      path: 'ownerID',
+      model: 'Users',
+      select: 'walletID'
+    })
+    .populate({
+      path: 'collaborators',
+      model: 'Users',
+      select: 'walletID'
+    })
+    .exec();
 
-    const projDetail = await projectModel.findOne({_id: projectid}).populate('tasks').exec();
-
+    // const projDetail = await projectModel.findOne({_id: projectid}).populate('ownerId');
+    // console.log(projDetail)
+    // const projDetail = await projectModel.findOne({_id: projectid}).populate('tasks').then(async (project)=>{
+    //     const user = await userModel.findById(project.ownerID);
+    //     project.walletID = user.walletID;
+    //     console.log(project)
+    //     return project;
+    // })
     if(projDetail === null){
         return res.status(400).send({ success: false, message: 'Project not found!' });
     }
