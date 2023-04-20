@@ -1,5 +1,28 @@
 const mongoose = require('mongoose');
 
+
+const certSchema = new mongoose.Schema({
+    // ownerID: {
+    //     type: mongoose.SchemaTypes.ObjectId,
+    //     ref: 'Users',
+    //     required: true
+    // },
+    title: {
+        type:String,
+        required: true
+    },
+    link:{
+        type:String,
+        required:true
+    },
+    org: {
+        type: String,
+        required: true,
+    }
+});
+
+
+
 const userSchema = new mongoose.Schema({
     username: {
         type: String,
@@ -34,10 +57,11 @@ const userSchema = new mongoose.Schema({
         type:String,
         default:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTpCKq1XnPYYDaUIlwlsvmLPZ-9-rdK28RToA&usqp=CAU"
     },
-    certs: {
-        type: [mongoose.SchemaTypes.ObjectId],
-        ref: 'Certifications'
-    },
+    certs: [certSchema],
+    // {
+    //     type: [mongoose.SchemaTypes.ObjectId],
+    //     ref: 'Certifications'
+    // },
     
     requests: {  //Keeps track of only the requests 'received'
         type: [mongoose.SchemaTypes.ObjectId],
@@ -116,29 +140,6 @@ const tasksSchema = new mongoose.Schema({
     isCompleted: Boolean
 });
 
-const certSchema = new mongoose.Schema({
-    ownerID: {
-        type: mongoose.SchemaTypes.ObjectId,
-        ref: 'Users',
-        required: true
-    },
-    title: {
-        type:String,
-        required: true
-    },
-    // ipfsHash: {   // certification verification removed, so no need for this 
-    //     type: String,
-    //     required: true
-    // },
-    link:{
-        type:String,
-        required:true
-    },
-    org: {
-        type: String,
-        required: true,
-    }
-});
 
 
 module.exports.Requests = mongoose.model('Requests', reqSchema);
