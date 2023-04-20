@@ -91,6 +91,10 @@ const projectSchema = new mongoose.Schema({
         ref: 'Users',
         required: true
     },
+    description:{
+        type:String,
+        required:true
+    },
     requiredSkills:{
         type: [String],
     },
