@@ -109,7 +109,8 @@ const projectSchema = new mongoose.Schema({
     },
     status:{
         type: Number,
-        enum: [0, 1, 2]     // 0: Incomplete, 1: In Progress, 2: Completed
+        enum: [0, 1, 2],     // 0: Incomplete, 1: In Progress, 2: Completed
+        default: 0
     }
 });
 

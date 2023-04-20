@@ -20,41 +20,36 @@ router.get('/',async(req,res)=>{
     })
 })
 
-router.post('/', async (req, res) => {
+router.post('/:walletID', async (req, res) => {
     // Enpoint to create a new project w/o tasks
 
     //Request Body : {userid, projName, description, skills, tasks, status(0/1/2) }
+    const {projName,description,skills} = req.body;
 
-    const userid = req.body.userid;
-    const projName = req.body.projName;
-    const description = req.body.description;
-    const skills = req.body.skills;
-    const tasks = req.body.tasks;
-    const status = req.body.status;
-
-    const user = await userModel.findById(userid).exec();
+    const user = await userModel.findOne({walletID:req.params.walletID}).exec();
+    console.log({ownerID: user._id, projectName: projName, description: description, requiredSkills: skills})
 
     if(!Array.isArray(skills)){
         return res.status(400).send({ success: false, message: 'Skills must be an array!' });
     }
-
-    const proj = new projectModel({ownerID: userid, projectName: projName, description: description, requiredSkills: skills, status: status});
-    user.projects.push(proj.id);
-
+    const proj = new projectModel({ownerID: user._id, projectName: projName, description: description, requiredSkills: skills});
+    user.projects.push(proj._id);
     // TODO: Add the project into the user's projects array - DONE
 
     try{
         await Promise.all([proj.save(), user.save()]);
+        res.status(200).send({ success: true, message: 'Project added successfully!' });
 
     }catch(err){
+        console.error(err)
         return res.status(400).send({ success: false, message: err.message+err.name });
     }
 
     //Save Project to db, and continue if and only if successful && tasks are present
-    if(!tasks)
-        return res.status(200).send({ success: true, message: 'Project added successfully!' });
+    // if(!tasks)
+    //     return res.status(200).send({ success: true, message: 'Project added successfully!' });
 
-    await taskInsert(tasks, proj.id, res);
+    // await taskInsert(tasks, proj.id, res);
 });
 
 router.post('/tasks', async (req, res) => {
