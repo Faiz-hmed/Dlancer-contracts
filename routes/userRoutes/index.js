@@ -25,7 +25,6 @@ router.post("/signup", async (req, res) => {
 
     //Request Body : {walletID, username, email, bio, location, skills}
     const {walletID,username,email,bio,location,skills,certificates} = req.body;
-    // const certIds = [];
 
     const user = new userModel({
         username:username,
@@ -37,30 +36,8 @@ router.post("/signup", async (req, res) => {
         certs: certificates,
       });
 
-    // const user = new userModel(req.body);
-
     try{
         await user.save()
-        // .then(async (saved)=>{
-        //     for (const cert of certificates) {
-        //         const certEntry = new certModel({
-        //           ownerID: saved._id,
-        //           title: cert.title,
-        //           link: cert.link,
-        //           org: cert.organization,
-        //         });
-        //         try {
-        //           const savedCert = await certEntry.save();
-        //           certIds.push(savedCert._id);
-        //         } catch (err) {
-        //           console.error(err);
-        //           return res.status(500).send({ message: 'Failed to create certification entry.' });
-        //         }
-        //       }
-        //      await userModel.findByIdAndUpdate(saved._id, { $set: { certs: certIds } } );
-
-        // });
-
         return res.status(200).send({ success: true, message: 'User Registered' });
     }catch(err){
         console.log(err)

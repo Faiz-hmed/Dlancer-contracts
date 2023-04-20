@@ -9,6 +9,17 @@ const requestsModel = Models.Requests;
 
 // TODO: Create endpoint to add users to a project
 
+router.get('/',async(req,res)=>{
+    const {walletID} = req.body;
+    userModel.findOne({walletID:walletID}).then((user)=>{
+        projectModel.find({ownerID:user._id}).then((certificates)=>{
+            res.status(200).json(certificates);
+        })
+    }).catch((e)=>{
+        res.status(500).json({success:false,message:e.message})
+    })
+})
+
 router.post('/', async (req, res) => {
     // Enpoint to create a new project w/o tasks
 
