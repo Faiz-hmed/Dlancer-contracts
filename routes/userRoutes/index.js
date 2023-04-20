@@ -1,6 +1,7 @@
 const router = require('express').Router();
 const mongoose = require('mongoose')
 const Models = require('../../Schema/index.js');
+const { reset } = require('nodemon');
 const userModel = Models.Users;
 const projectModel = Models.Projects;
 const certModel = Models.Certifications;
@@ -19,6 +20,20 @@ router.get("/signin/:walletid", async (req, res) => {
         return res.status(403).send({ success: false, message: 'User not registered!' });
     }
 });
+
+
+router.post("/edit/:walletID",async (req,res)=>{
+    try{
+        const updatedUser = await userModel.findOneAndUpdate({walletID:req.params.walletID}, req.body, {new:true});
+        res.status(200).json({success:true,message:"user updated"});
+    }
+    catch(e)
+    {
+        console.error(e);
+        res.status(500).json({success:false,message:e.message})
+    }
+
+})
 
 router.post("/signup", async (req, res) => {
     // Endpoint to register/add a new user
@@ -154,7 +169,7 @@ router.get("/:walletid", async (req, res) => {
         return res.status(400).send({ success: false, message: 'Error occured' });
     }
     
-    await user.populate(['certs','requests']);
+    // await user.populate(['certs','requests']);
 
     if(user === null){
         return res.status(400).send({ success: false, message: 'User not found!' });

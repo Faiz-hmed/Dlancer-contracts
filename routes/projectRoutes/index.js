@@ -10,7 +10,7 @@ const requestsModel = Models.Requests;
 // TODO: Create endpoint to add users to a project
 
 router.get('/',async(req,res)=>{
-    const {walletID} = req.body;
+    const walletID = req.query.walletID;
     userModel.findOne({walletID:walletID}).then((user)=>{
         projectModel.find({ownerID:user._id}).then((certificates)=>{
             res.status(200).json(certificates);
