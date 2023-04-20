@@ -83,6 +83,24 @@ router.post('/addcert/:walletID',async(req,res)=>{
     }
 })
 
+
+
+router.delete('/removecert/:walletID',async(req,res)=>{
+    try{
+        const user = await userModel.findOne({walletID:req.params.walletID}); // get the user object from the database using the user ID
+        user.certs = user.certs.filter((cert)=>{
+           return cert._id.toString()!= req.query.certID
+        }); // remove the new certificate to the user's certs array
+    
+        await user.save();
+        res.status(200).json({success:true,message:"updated successfully"})
+
+    }catch(e){
+        console.error(e)
+        res.status(500).json({success:false,message:e.message})
+    }
+})
+
 router.post("/certs", async (req, res) => {
     // Endpoint to add a certificate to a user
     //Request Body : {userid, ipfsHash, orgIssued}
