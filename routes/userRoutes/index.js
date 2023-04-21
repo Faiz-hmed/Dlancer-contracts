@@ -11,6 +11,7 @@ router.get("/signin/:walletid", async (req, res) => {
 
     // Check for user in DB
     const walletid = req.params.walletid;
+    console.log(walletid)
     const registeredUser = await userModel.findOne({walletID: walletid}).exec();
 
     if(registeredUser !== null){

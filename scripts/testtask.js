@@ -12,12 +12,14 @@ task("create", "creates a task")
   .addParam("deadline", "deadline") 
   .addParam("employer", "employer wallet address")
   .addParam("description", "task description")
+  .addParam("name", "task name")
   .setAction(async (args, hre) => {
     const TaskContract = await hre.ethers.getContractFactory("TaskContract");
     const amount = ethers.utils.parseUnits("100")
     const deadline = Math.floor(Date.now() / 1000) + 3600;
+    const name = args.name;
     const description=args.description || "It is a cool task";
-    console.log(`employee:, ${args.employee}, amount:, ${args.amount}, deadline:, ${args.deadline}, employer:, ${args.employer}, taskDescription:, ${args.description},`);
+    console.log(`employee:, ${args.employee}, amount:, ${args.amount}, deadline:, ${args.deadline}, employer:, ${args.employer}, taskDescription:, ${args.description}, taskname: ${args.name}`);
     const {deployer,freelancer,hirer} = await hre.getNamedAccounts();
 
     // const taskContract = await TaskContract.deploy(
@@ -25,11 +27,14 @@ task("create", "creates a task")
     //     amount, // reward amount in USD
     //     deadline, //deadline 
     //     hirer, //employer wallet address
+            // name,//name of the task
     //     description, // task description
     //     "0x21E0F5d54E45CE43f465a19AA3668F03be118CfC" // BUSD contract address
     //   );
     //   await taskContract.deployed();
-    //   console.log("TaskContract deployed to:", taskContract.address);
+    console.log("TaskContract deployed to:", '0xAC321cC6C7289d28bddd0A368Bd4ea37E5907c50');
+
+      // console.log("TaskContract deployed to:", taskContract.address);
     // fs.writeFileSync(ADDRESS_FILE,JSON.stringify("0xB35B57f55d8188460AC223E430Af3E463a691b4e"))
       
     //   const task = await ethers.getContractAt("TaskContract",getLatestAddress(),hirer)

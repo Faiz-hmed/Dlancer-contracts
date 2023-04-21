@@ -15,6 +15,7 @@ async function main() {
   const amount = ethers.utils.parseUnits("100")
   const employee = freelancer
   const deadline = Math.floor(Date.now() / 1000) + 3600;
+  const taskname = "Todo"
   const task_description="It is a cool task";
 
   const taskContract = await TaskContract.deploy(
@@ -22,6 +23,7 @@ async function main() {
     amount, // reward amount in USD
     deadline, //deadline 
     hirer, //employer wallet address
+    taskname,
     task_description, // task description
     "0x21E0F5d54E45CE43f465a19AA3668F03be118CfC" // BUSD contract address
   );

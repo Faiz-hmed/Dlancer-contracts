@@ -21,9 +21,13 @@ app.use(cors({origin:'*'}))
 app.use("/api/users", userRoutes);
 app.use("/api/req", reqRoutes);
 app.use("/api/projects", projRoutes);
-app.use("/api/test",testRoutes);
+app.use("/api/tasks",testRoutes);
 
 const PORT = process.env.PORT || 5000;
+try{
 app.listen(PORT, function () {
   console.log(`Server started at PORT: ${PORT}`);
-});
+})
+}catch(e){
+  console.error(e)
+}

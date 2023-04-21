@@ -10,6 +10,7 @@ contract TaskContract {
     uint256 public reward;
     uint256 public deadline;
     string public taskDescription;
+    string public taskName;
     bool public completed;
     bool public cancelled;
     bool public activated;
@@ -20,6 +21,7 @@ contract TaskContract {
         uint256 _reward,
         uint256 _deadline,
         address _employer,
+        string memory _taskName,
         string memory _taskDescription,
         address _busdToken
     ) {
@@ -27,6 +29,7 @@ contract TaskContract {
         employee = _employee;
         reward = _reward;
         deadline = _deadline;
+        taskName = _taskName;
         taskDescription = _taskDescription;
         completed = false;
         cancelled = false;

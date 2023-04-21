@@ -124,25 +124,33 @@ const tasksSchema = new mongoose.Schema({
         ref: 'Projects',
         required: true
     },
-    taskName: {
+    freelancer: {
         type: String,
         required: true
     },
-    // contractAddress: {    // For storing the contract address of the task
+    // taskName: {
     //     type: String,
-    //     required:true
+    //     required: true
     // },
-    startTime: {
-        type: Date
+    // employee:{
+    //     type:String,
+    //     required:true,
+    // },
+    contractAddress: {    // For storing the contract address of the task
+        type: String,
+        required:true
     },
-    endTime: {
-        type: Date,
-        required: true
-    },
-    taskDescription: {
-        type: String
-    },
-    isCompleted: Boolean
+    // startTime: {
+    //     type: Date
+    // },
+    // endTime: {
+    //     type: Date,
+    //     required: true
+    // },
+    // taskDescription: {
+    //     type: String
+    // },
+    // isCompleted: Boolean
 });
 
 
