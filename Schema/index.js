@@ -46,12 +46,14 @@ const userSchema = new mongoose.Schema({
     bio: String,
     location: String,
     tasksAssigned: {
-        type:Number,
-        default:0
+        type:[mongoose.SchemaTypes.ObjectId],
+        ref:'Tasks',
+        default:[]
     },
     tasksCompleted: {
-        type:Number,
-        default:0
+        type:[mongoose.SchemaTypes.ObjectId],
+        ref:'Tasks',
+        default:[]
     },
     image:{
         type:String,

@@ -20,6 +20,22 @@ router.get('/',async(req,res)=>{
     })
 })
 
+router.get('/other',async(req,res)=>{
+    try{
+    const walletID = req.query.walletID;
+    userModel.findOne({walletID:walletID}).populate('tasksAssigned').then((user)=>{
+        // projectModel.find({ownerID:user._id}).then((certificates)=>{
+            res.status(200).json(user);
+        // })
+    }).catch((e)=>{
+        res.status(500).json({success:false,message:e.message})
+    })
+}catch(e){
+    console.log(e);
+}
+    
+})
+
 router.post('/:walletID', async (req, res) => {
     // Enpoint to create a new project w/o tasks
 
@@ -115,7 +131,6 @@ router.get('/:projectid', async (req, res) => {
     if(projDetail === null){
         return res.status(400).send({ success: false, message: 'Project not found!' });
     }
-
     return res.status(200).send(projDetail);
 });
 

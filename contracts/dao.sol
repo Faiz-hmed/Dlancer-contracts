@@ -37,8 +37,8 @@ contract TaskContract {
         busdToken = IERC20(_busdToken);
     }
 
-    function getValues() public view returns (string memory, string memory, uint256,uint256,bool,bool) {
-        return (taskName,taskDescription,reward,deadline,cancelled,completed);
+    function getValues() public view returns (string memory, string memory,address, uint256,uint256,bool,bool) {
+        return (taskName,taskDescription,employee,reward,deadline,cancelled,completed);
     }
 
     function activateTask() public {
