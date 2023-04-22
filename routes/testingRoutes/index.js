@@ -40,13 +40,31 @@ router.post('/', (req, res) => {
 
 });
 
+router.delete('/:projectid', async (req, res) => {
+  const projectid = req.params.projectid;
+  const taskid = req.query.taskid;
+  try{  
+        await projectModel.findById(projectid).then((project)=>{
+            project.tasks = project.tasks.filter((task)=>{return taskid!==task.toString()});
+            project.save();
+        })
+        console.log("project del")
+        await taskModel.findByIdAndDelete(taskid);
+        console.log("task del")
+        res.status(200).json({success:true,message:"task successfully deleted"})
+  }catch(e){
+  console.error(e)
+  res.status(500).json({success:false,message:"task could not be deleted"})
+  }
+});
+
 
 router.post('/:projectid', async (req, res) => {
-  const { employee, contractAddress } = req.body;
+  const { employee, contractAddress,name } = req.body;
   try{
 
     const projectid = new mongoose.Types.ObjectId(req.params.projectid);
-        const newTask = new taskModel({projectID:projectid,freelancer:employee,contractAddress:contractAddress});
+        const newTask = new taskModel({projectID:projectid,taskName:name,freelancer:employee,contractAddress:contractAddress});
         await newTask.save()
         projectModel.findById(req.params.projectid).then((project)=>{
           project.tasks.push(newTask._id);

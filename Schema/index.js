@@ -128,10 +128,10 @@ const tasksSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    // taskName: {
-    //     type: String,
-    //     required: true
-    // },
+    taskName: {
+        type: String,
+        required: true
+    },
     // employee:{
     //     type:String,
     //     required:true,

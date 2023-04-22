@@ -110,16 +110,8 @@ router.get('/:projectid', async (req, res) => {
       model: 'Users',
       select: 'walletID'
     })
+    .populate('tasks')
     .exec();
-
-    // const projDetail = await projectModel.findOne({_id: projectid}).populate('ownerId');
-    // console.log(projDetail)
-    // const projDetail = await projectModel.findOne({_id: projectid}).populate('tasks').then(async (project)=>{
-    //     const user = await userModel.findById(project.ownerID);
-    //     project.walletID = user.walletID;
-    //     console.log(project)
-    //     return project;
-    // })
     if(projDetail === null){
         return res.status(400).send({ success: false, message: 'Project not found!' });
     }
