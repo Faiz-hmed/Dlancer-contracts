@@ -25,7 +25,7 @@ router.get('/other',async(req,res)=>{
     const walletID = req.query.walletID;
     userModel.findOne({walletID:walletID}).populate('tasksAssigned').then((user)=>{
         // projectModel.find({ownerID:user._id}).then((certificates)=>{
-            res.status(200).json(user);
+            res.status(200).json(user.tasksAssigned);
         // })
     }).catch((e)=>{
         res.status(500).json({success:false,message:e.message})

@@ -4,8 +4,9 @@ const fs=  require('fs')
 const Models = require('../../Schema/index.js');
 const taskModel = Models.Tasks;
 const projectModel = Models.Projects;
+const userModel = Models.Users;
 const { exec } = require("child_process");
-const { default: mongoose } = require('mongoose');
+const { default: mongoose, Model } = require('mongoose');
 // const exec = require("child_process");
 const ADDRESS_FILE = 'address.txt';
 
@@ -30,7 +31,6 @@ router.post('/', (req, res) => {
         const contractAddress = match[1];
         console.log(`Contract deployed to address: ${contractAddress}`);
         res.status(200).json({success:true,address:contractAddress});
-
       } else {
         console.error("Failed to extract contract address from stdout.");
         return res.status(500).json({success:false,message:"contract could not be deployed"})
@@ -66,9 +66,13 @@ router.post('/:projectid', async (req, res) => {
     const projectid = new mongoose.Types.ObjectId(req.params.projectid);
         const newTask = new taskModel({projectID:projectid,taskName:name,freelancer:employee,contractAddress:contractAddress});
         await newTask.save()
-        projectModel.findById(req.params.projectid).then((project)=>{
+        projectModel.findById(req.params.projectid).then(async (project)=>{
           project.tasks.push(newTask._id);
-          project.save();
+          userModel.findOne({walletID:employee.toLowerCase()}).then((user)=>{
+            user.tasksAssigned.push(newTask._id);
+            user.save();
+            project.save();
+          })
         })
         res.status(200).json({success:true,message:"task successfully created"})
   }catch(e){
