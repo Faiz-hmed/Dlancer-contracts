@@ -20,6 +20,19 @@ router.get('/',async(req,res)=>{
     })
 })
 
+router.get('/otherprojects',async(req,res)=>{
+    const walletID = req.query.walletID;
+    userModel.findOne({ walletID: walletID.toLowerCase() })
+  .populate({ path: 'tasksAssigned', populate: { path: 'projectID' } }).then((user)=>{
+        dict = {}
+        for(ind in user.tasksAssigned)
+            dict[user.tasksAssigned[ind].projectID._id.toString()]=user.tasksAssigned[ind].projectID;
+        res.status(200).json(Object.values(dict))
+    }).catch((e)=>{
+        res.status(500).json({success:false,message:e.message})
+    })
+})
+
 router.get('/other',async(req,res)=>{
     try{
     const walletID = req.query.walletID;
