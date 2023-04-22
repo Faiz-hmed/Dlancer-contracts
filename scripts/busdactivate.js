@@ -33,7 +33,11 @@ await busdToken.connect(dep[2]).approve(taskContractAddr, amount);
 // const taskContract = await ethers.getContractFactory("TaskContract");
 const task = await ethers.getContractAt("TaskContract",getLatestAddress(),hirer)
 // const task = await taskContract.attach(getLatestAddress());
+// const details = await task.getValues();
+// console.log(details) 
 const done = await task.activateTask();
+
+
 // const act = await busdToken.allowance(hirer,getLatestAddress());
 // const act = await task.viewReward();
 

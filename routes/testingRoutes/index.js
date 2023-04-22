@@ -80,7 +80,7 @@ router.post('/:projectid', async (req, res) => {
 
 router.get('/', async (req, res) => {
       // Return a success response to the client
-      res.status(200).send("Task route");
+      res.status(200).json({title:"Task title",description:"task description",employee:"employee id", reward:100, deadline:2});
 });
 
 module.exports = router;
