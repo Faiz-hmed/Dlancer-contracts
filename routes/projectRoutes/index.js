@@ -121,7 +121,7 @@ async function taskInsert(tasks, projid, res){
         return res.status(400).send({ success: false, message: err.message });
     }
 
-    return res.status(200).send({ success: true, message: 'Tasks added successfully!' });
+    return res.status(200).send({ success: true, message: 'Tasks [& Project] added successfully!' });
 }
 
 router.get('/:projectid', async (req, res) => {
