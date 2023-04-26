@@ -66,13 +66,11 @@ router.get('/collaborators', async (req, res) => {
   }
 });
 
-router.get('/recommend', async(req,res)=>{
+router.get('/recommendprojects/:projectid', async(req,res)=>{
  // Install required libraries
-const natural = require('natural');
-var proj = await projectModel.find({})
+  const project = await projectModel.findById(req.params.projectid)
   const users = await userModel.find({});
-  proj = proj[1]
-  const rec = recommendUsersForProject(users,proj)
+  const rec = recommendUsersForProject(users,project)
 
 // Define similarity function using Jaccard index
 function similarity(userSkills, projectSkills) {
@@ -93,7 +91,7 @@ function recommendUsersForProject(users,project) {
   }
 
   recommendations.sort((a, b) => b.sim - a.sim);
-  return recommendations.map(x=>{return {name:x.user.username,sim:x.sim}})
+  return recommendations.map(x=>{x.user.sim = x.sim; return x.user})
   // return recommendations.slice(0, 3).map(x => x.user.name);
 }
 

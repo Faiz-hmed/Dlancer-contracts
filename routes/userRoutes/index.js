@@ -27,16 +27,40 @@ router.get("/getfilters/:walletID",async (req,res)=>{
     try{
         const walletID = req.params.walletID;
         // const owner = await userModel.findOne({walletID:walletID});
+        
         const owner = await userModel.findOne({walletID:walletID});
         const ownerID = owner._id;
-        const tasks= await projectModel.aggregate([
-            { $match: { ownerID: ownerID } },
-            { $project: { _id: 0, tasks: 1 } },
+        const projects = await projectModel.find({ownerID:ownerID},{_id:1,projectName:1});
+        const tasks =await projectModel.aggregate([
+            { $match: { ownerID: ownerID} },
             { $unwind: "$tasks" },
-            { $group: { _id: null, tasks: { $push: "$tasks" } } },
-            { $project: { _id: 0, tasks: 1 } }
+            {
+              $lookup: {
+                from: "tasks",
+                localField: "tasks",
+                foreignField: "_id",
+                as: "task"
+              }
+            },
+            { $unwind: "$task" },
+            {
+              $group: {
+                _id: {
+                  projectId: "$_id",
+                  taskId: "$task._id"
+                },
+                taskName: { $first: "$task.taskName" }
+              }
+            },
+            {
+              $group: {
+                _id: "$_id.projectId",
+                tasks: { $push: { taskId: "$_id.taskId", taskName: "$taskName" } }
+              }
+            }
           ]);
-          res.status(200).json({projects:owner.projects,tasks:tasks[0].tasks})
+          
+          res.status(200).json({projects:projects,tasks:tasks[0].tasks})
         }
     catch(e)
     {
