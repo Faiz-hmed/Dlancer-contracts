@@ -7,8 +7,35 @@ const projectModel = Models.Projects;
 const userModel = Models.Users;
 const { exec } = require("child_process");
 const { default: mongoose, Model } = require('mongoose');
+const Matrix = require('ml-matrix');
+const natural = require('natural');
+const { CountVectorizer } = natural;
 // const exec = require("child_process");
 const ADDRESS_FILE = 'address.txt';
+
+
+
+function similarity(userSkills, projectSkills) {
+  const intersection = userSkills.filter(x => projectSkills.includes(x));
+  const union = [...new Set([...userSkills, ...projectSkills])];
+  return intersection.length / union.length;
+}
+
+// Define recommendation function
+function recommendUsersForProject(users,project) {
+  const projectSkills = project.requiredSkills;
+  const recommendations = [];
+
+  for (const user of users) {
+    const userSkills = user.skills;
+    const sim = similarity(userSkills, projectSkills);
+    recommendations.push({ user, sim });
+  }
+
+  recommendations.sort((a, b) => b.sim - a.sim);
+  return recommendations.map(x=>{x.user.sim = x.sim; return x.user})
+  // return recommendations.slice(0, 3).map(x => x.user.name);
+}
 
 
 router.post('/', (req, res) => {
@@ -36,9 +63,48 @@ router.post('/', (req, res) => {
         return res.status(500).json({success:false,message:"contract could not be deployed"})
       }
     }
-    );
-
+    );;
+  
+  // Define project data
+  
 });
+
+router.get('/collaborators', async (req, res) => {
+  const projectid = req.query.projectid;
+  console.log(projectid)
+  try{
+      const collaborators = await projectModel.findById(projectid,{collaborators:1})
+      .populate({
+      path: 'collaborators',
+      model: 'Users',
+      select: 'walletID username'
+      })
+      .exec();
+      console.log(collaborators)
+      return res.status(200).send(collaborators);
+  }catch(e){
+      console.error(e.message)
+      return res.status(400).send({ success: false, message: 'Project not found!' });
+  }
+});
+
+router.get('/recommendprojects/:projectid', async(req,res)=>{
+ // Install required libraries
+  const project = await projectModel.findById(req.params.projectid)
+  const users = await userModel.find({});
+  const rec = recommendUsersForProject(users,project)
+  res.status(200).json(rec)
+})
+
+router.get('/recommendtasks/:taskid', async(req,res)=>{
+  // Install required libraries
+  // console.log(req.params.taskid)
+   const task = await taskModel.findById(req.params.taskid)
+   const users = await userModel.find({});
+   const rec = recommendUsersForProject(users,task)
+   console.log(rec)
+   res.status(200).json(rec)
+ })
 
 router.delete('/:projectid', async (req, res) => {
   const projectid = req.params.projectid;
@@ -60,11 +126,11 @@ router.delete('/:projectid', async (req, res) => {
 
 
 router.post('/:projectid', async (req, res) => {
-  const { employee, contractAddress,name } = req.body;
+  const { employee, contractAddress,name,requiredSkills } = req.body;
   try{
 
     const projectid = new mongoose.Types.ObjectId(req.params.projectid);
-        const newTask = new taskModel({projectID:projectid,taskName:name,freelancer:employee,contractAddress:contractAddress});
+        const newTask = new taskModel({projectID:projectid,taskName:name,freelancer:employee,contractAddress:contractAddress,requiredSkills:requiredSkills});
         await newTask.save()
         projectModel.findById(req.params.projectid).then(async (project)=>{
           project.tasks.push(newTask._id);

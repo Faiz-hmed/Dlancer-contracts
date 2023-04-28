@@ -5,6 +5,7 @@ const { reset } = require('nodemon');
 const userModel = Models.Users;
 const projectModel = Models.Projects;
 const certModel = Models.Certifications;
+const tasksModel = Models.Tasks;
 
 router.get("/signin/:walletid", async (req, res) => {
     // Endpoint to check if user is registered
@@ -21,6 +22,53 @@ router.get("/signin/:walletid", async (req, res) => {
         return res.status(403).send({ success: false, message: 'User not registered!' });
     }
 });
+
+router.get("/getfilters/:walletID",async (req,res)=>{
+    try{
+        const walletID = req.params.walletID;
+        // const owner = await userModel.findOne({walletID:walletID});
+        
+        const owner = await userModel.findOne({walletID:walletID});
+        const ownerID = owner._id;
+        const projects = await projectModel.find({ownerID:ownerID},{_id:1,projectName:1});
+        const tasks =await projectModel.aggregate([
+            { $match: { ownerID: ownerID} },
+            { $unwind: "$tasks" },
+            {
+              $lookup: {
+                from: "tasks",
+                localField: "tasks",
+                foreignField: "_id",
+                as: "task"
+              }
+            },
+            { $unwind: "$task" },
+            {
+              $group: {
+                _id: {
+                  projectId: "$_id",
+                  taskId: "$task._id"
+                },
+                taskName: { $first: "$task.taskName" }
+              }
+            },
+            {
+              $group: {
+                _id: "$_id.projectId",
+                tasks: { $push: { taskId: "$_id.taskId", taskName: "$taskName" } }
+              }
+            }
+          ]);
+          
+          res.status(200).json({projects:projects,tasks:tasks[0].tasks})
+        }
+    catch(e)
+    {
+        console.error(e);
+        res.status(500).json({success:false,message:e.message})
+    }
+
+})
 
 
 

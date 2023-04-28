@@ -55,6 +55,10 @@ const userSchema = new mongoose.Schema({
         ref:'Tasks',
         default:[]
     },
+    rating:{
+        type:Number,
+        default:4
+    },
     image:{
         type:String,
         default:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTpCKq1XnPYYDaUIlwlsvmLPZ-9-rdK28RToA&usqp=CAU"
@@ -133,6 +137,10 @@ const tasksSchema = new mongoose.Schema({
     taskName: {
         type: String,
         required: true
+    },
+    requiredSkills:{
+        type:[String],
+        required:true,
     },
     // employee:{
     //     type:String,

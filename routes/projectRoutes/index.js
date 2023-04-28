@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 const Models = require('../../Schema/index.js');
+const { route } = require('../testingRoutes/index.js');
 const userModel = Models.Users;
 const projectModel = Models.Projects;
 const taskModel = Models.Tasks;
@@ -46,6 +47,7 @@ router.get('/other',async(req,res)=>{
 }
     
 })
+
 
 router.post('/:walletID', async (req, res) => {
     // Enpoint to create a new project w/o tasks
@@ -144,6 +146,7 @@ router.get('/:projectid', async (req, res) => {
     }
     return res.status(200).send(projDetail);
 });
+
 
 
 module.exports = router;
