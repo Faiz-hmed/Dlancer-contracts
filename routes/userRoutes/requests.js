@@ -20,10 +20,14 @@ router.get("/:userid", async (req, res) => {
     // May require 'project name' in frontend(to display in requests page), hence populating project
     const requests = await Promise.all(user.requests.map(async requestId => {
 
-        const request = await requestsModel.findOne({_id: String(requestId)}).exec();
+        let request = await requestsModel.findOne({_id: String(requestId)}).exec();
         await request.populate('project');
+
+        let mode = 0;   // Request (default)
+        if(request.project.ownerID === request.user)         
+            mode = 1;   // Invite
         
-        return request;
+        return {...request, mode: mode};
     }));
 
     return res.status(200).send(requests);
