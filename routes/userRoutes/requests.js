@@ -37,15 +37,17 @@ router.post('/', async (req, res) => {      // Running into infinite loop
     // Endpoint to send requests
 
     // Request body: {initiatorId (userid), resolverId (userid), projectId}
-
-    const initiatingUserId = req.body.initiatorId;
+    const walletID = req.body.initiatorId;
+    console.log("hey"+walletID)
+    const initiator = await userModel.findOne({walletID:walletID}).exec();
+    console.log(walletID)
+    const initiatingUserId = initiator._id;
     const resolvingUserId = req.body.resolverId;
     const projectId = req.body.projectId;
     // Initiator and resolver keywords are used to identify the users (Request sender and receiver)
 
     const resolverUser = await userModel.findOne({_id: resolvingUserId}).exec();
     const requestedProject = await projectModel.findOne({_id: projectId}).exec();
-
 
     if(resolverUser === null || requestedProject === null){
         return res.status(400).send({ success: false, message: 'User/Proj not found!' });
@@ -66,9 +68,9 @@ router.post('/', async (req, res) => {      // Running into infinite loop
     try{
         await resolverUser.save();
 
-        return res.status(200).send({ success: true, message: 'Request sent successfully!' });
+        return res.status(200).json({ success: true, message: 'Request sent successfully!' });
     } catch(err){
-        return res.status(400).send({ success: false, message: err.message });
+        return res.status(400).json({ success: false, message: err.message });
     }
 });
 
