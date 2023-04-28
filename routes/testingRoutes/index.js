@@ -15,6 +15,28 @@ const ADDRESS_FILE = 'address.txt';
 
 
 
+function similarity(userSkills, projectSkills) {
+  const intersection = userSkills.filter(x => projectSkills.includes(x));
+  const union = [...new Set([...userSkills, ...projectSkills])];
+  return intersection.length / union.length;
+}
+
+// Define recommendation function
+function recommendUsersForProject(users,project) {
+  const projectSkills = project.requiredSkills;
+  const recommendations = [];
+
+  for (const user of users) {
+    const userSkills = user.skills;
+    const sim = similarity(userSkills, projectSkills);
+    recommendations.push({ user, sim });
+  }
+
+  recommendations.sort((a, b) => b.sim - a.sim);
+  return recommendations.map(x=>{x.user.sim = x.sim; return x.user})
+  // return recommendations.slice(0, 3).map(x => x.user.name);
+}
+
 
 router.post('/', (req, res) => {
     const { employee,amount,deadline,employer,description,name } = req.body;
@@ -71,36 +93,18 @@ router.get('/recommendprojects/:projectid', async(req,res)=>{
   const project = await projectModel.findById(req.params.projectid)
   const users = await userModel.find({});
   const rec = recommendUsersForProject(users,project)
-
-// Define similarity function using Jaccard index
-function similarity(userSkills, projectSkills) {
-  const intersection = userSkills.filter(x => projectSkills.includes(x));
-  const union = [...new Set([...userSkills, ...projectSkills])];
-  return intersection.length / union.length;
-}
-
-// Define recommendation function
-function recommendUsersForProject(users,project) {
-  const projectSkills = project.requiredSkills;
-  const recommendations = [];
-
-  for (const user of users) {
-    const userSkills = user.skills;
-    const sim = similarity(userSkills, projectSkills);
-    recommendations.push({ user, sim });
-  }
-
-  recommendations.sort((a, b) => b.sim - a.sim);
-  return recommendations.map(x=>{x.user.sim = x.sim; return x.user})
-  // return recommendations.slice(0, 3).map(x => x.user.name);
-}
-
-// Test the recommendation system
-// const project = projects[4];
-// const recommendedUsers = recommendUsersForProject(project, users);
-// console.log(`Recommended users for ${project.name}: ${recommendedUsers.join(', ')}`);
-res.status(200).json(rec)
+  res.status(200).json(rec)
 })
+
+router.get('/recommendtasks/:taskid', async(req,res)=>{
+  // Install required libraries
+  // console.log(req.params.taskid)
+   const task = await taskModel.findById(req.params.taskid)
+   const users = await userModel.find({});
+   const rec = recommendUsersForProject(users,task)
+   console.log(rec)
+   res.status(200).json(rec)
+ })
 
 router.delete('/:projectid', async (req, res) => {
   const projectid = req.params.projectid;
