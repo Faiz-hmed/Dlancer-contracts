@@ -11,6 +11,8 @@ router.get("/:userid", async (req, res) => {
     const userId = req.params.userid;
     const user = await userModel.findOne({_id: userId}).exec();
 
+    // const requests = await userModel.findOne({_id:userId}).populate('requests').populate('project');
+
     if(user === null){
         return res.status(400).send({ success: false, message: 'User not found!' });
     }
