@@ -1,5 +1,6 @@
 const router = require('express').Router();
 
+const { default: mongoose } = require('mongoose');
 const Models = require('../../Schema/index.js');
 const userModel = Models.Users;
 const projectModel = Models.Projects;
@@ -10,7 +11,6 @@ router.get("/:walletID", async (req, res) => {
     const userforid = await userModel.findOne({walletID:req.params.walletID});
     const userId = userforid._id;
     const user = await userModel.findOne({_id: userId}).exec();
-
     // const requests = await userModel.findOne({_id:userId}).populate('requests').populate('project');
 
     if(user === null){
@@ -20,13 +20,12 @@ router.get("/:walletID", async (req, res) => {
     // May require 'project name' in frontend(to display in requests page), hence populating project
     const requests = await Promise.all(user.requests.map(async requestId => {
 
-        let request = await requestsModel.findOne({_id: String(requestId)}).exec();
-        await request.populate({path: 'project',select: 'projectName'});
+        let request = await requestsModel.findOne({_id: String(requestId)}).populate({path: 'project',select: 'projectName ownerID'});
         const userobj = await userModel.findById(request.user,{username:1,walletID:1,_id:0});
-        let mode = 0;   // Request (default)
-        if(request.project.ownerID === request.user)         
-            mode = 1;   // Invite
-        
+        let mode = 1;   // Request (default)
+        if(request.project.ownerID.toString() === request.user.toString())         
+            mode = 0;   // Invite
+        console.log(request.project.ownerID.toString(),request.user.toString(),request.project.ownerID.toString() === request.user.toString())
         return {...request, mode: mode,username:userobj.username,walletID:userobj.walletID};
     }));
 
@@ -48,7 +47,13 @@ router.post('/', async (req, res) => {      // Running into infinite loop
 
     const resolverUser = await userModel.findOne({_id: resolvingUserId}).exec();
     const requestedProject = await projectModel.findOne({_id: projectId}).exec();
+    requestedProject.collaborators.map((collabs)=>{
+        console.log(collabs,resolvingUserId,collabs.toString()==resolvingUserId)
+        if(collabs.toString()==resolvingUserId)
+            return res.status(200).send({ success: false, message: 'User already a collaborator' });
 
+    })
+ 
     if(resolverUser === null || requestedProject === null){
         return res.status(400).send({ success: false, message: 'User/Proj not found!' });
     }
@@ -78,9 +83,11 @@ router.post('/handle', async (req, res) => {
     // Endpoint to handle accept/reject-ing of requests
 
     //Request body: {requestId, resolverId(userid) , result}
-
+    console.log(req.body)
     const requestId = req.body.requestId;
-    const resolvingUserId = req.body.resolverId;
+    const resolverWalletID = req.body.resolverId;
+    const resolvingUser = await userModel.findOne({walletID:resolverWalletID}).exec();
+    const resolvingUserId = resolvingUser._id;
     const requestResult = req.body.result;
 
     const resolverUser = await userModel.findOne({_id: resolvingUserId}).exec();
@@ -103,9 +110,8 @@ router.post('/handle', async (req, res) => {
     if(requestResult == true){
         // find the project requested
         const project = await projectModel.findById(deletedRequest.project).exec();
-
         // Case of an invite being send by the resolver
-        if(project.ownerID === initiatorUser) {
+        if(project.ownerID.toString() == initiatorUser._id.toString()) {
             Array.isArray(project.collaborators) ? project.collaborators.push(resolverUser.id) : project.collaborators = [resolverUser.id];
 
             resolverUser.projects.push(project.id);

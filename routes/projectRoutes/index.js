@@ -10,6 +10,13 @@ const requestsModel = Models.Requests;
 
 router.get('/',async(req,res)=>{
     const walletID = req.query.walletID;
+    if(!walletID)
+        projectModel.find({}).then((projects)=>{
+            res.status(200).json(projects);
+        }).catch((e)=>{
+            res.status(500).json({success:false,message:e.message})
+        })
+    else
     userModel.findOne({walletID:walletID}).then((user)=>{
         projectModel.find({ownerID:user._id}).then((certificates)=>{
             res.status(200).json(certificates);
