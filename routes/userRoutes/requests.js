@@ -5,10 +5,10 @@ const userModel = Models.Users;
 const projectModel = Models.Projects;
 const requestsModel = Models.Requests;
 
-router.get("/:userid", async (req, res) => {
+router.get("/:walletID", async (req, res) => {
     //Endpoint to get the requests made to a user
-
-    const userId = req.params.userid;
+    const userforid = await userModel.findOne({walletID:req.params.walletID});
+    const userId = userforid._id;
     const user = await userModel.findOne({_id: userId}).exec();
 
     // const requests = await userModel.findOne({_id:userId}).populate('requests').populate('project');
@@ -21,13 +21,13 @@ router.get("/:userid", async (req, res) => {
     const requests = await Promise.all(user.requests.map(async requestId => {
 
         let request = await requestsModel.findOne({_id: String(requestId)}).exec();
-        await request.populate('project');
-
+        await request.populate({path: 'project',select: 'projectName'});
+        const userobj = await userModel.findById(request.user,{username:1,walletID:1,_id:0});
         let mode = 0;   // Request (default)
         if(request.project.ownerID === request.user)         
             mode = 1;   // Invite
         
-        return {...request, mode: mode};
+        return {...request, mode: mode,username:userobj.username,walletID:userobj.walletID};
     }));
 
     return res.status(200).send(requests);
