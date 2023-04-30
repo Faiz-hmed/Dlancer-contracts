@@ -37,23 +37,24 @@ router.post('/', async (req, res) => {      // Running into infinite loop
 
     // Request body: {initiatorId (userid), resolverId (userid), projectId}
     const walletID = req.body.initiatorId;
-    console.log("hey"+walletID)
     const initiator = await userModel.findOne({walletID:walletID}).exec();
-    console.log(walletID)
     const initiatingUserId = initiator._id;
     const resolvingUserId = req.body.resolverId;
     const projectId = req.body.projectId;
     // Initiator and resolver keywords are used to identify the users (Request sender and receiver)
 
-    const resolverUser = await userModel.findOne({_id: resolvingUserId}).exec();
-    const requestedProject = await projectModel.findOne({_id: projectId}).exec();
-    requestedProject.collaborators.map((collabs)=>{
-        console.log(collabs,resolvingUserId,collabs.toString()==resolvingUserId)
-        if(collabs.toString()==resolvingUserId)
-            return res.status(200).send({ success: false, message: 'User already a collaborator' });
-
+    const resolverUser = await userModel.findById(resolvingUserId).exec();
+    const requestedProject = await projectModel.findById(projectId).exec();
+    let flag=false;
+    requestedProject.collaborators.map((collab)=>{
+        if(flag) return;
+        if(resolverUser._id.toString()==requestedProject.ownerID.toString() && collab.toString()==initiatingUserId.toString())
+            flag=true;
+        if(collab.toString()==resolvingUserId && initiatingUserId.toString()==requestedProject._id.toString())
+            flag=true;
     })
- 
+    if(flag)
+        return res.status(200).send({ success: false, message: 'User already a collaborator' });
     if(resolverUser === null || requestedProject === null){
         return res.status(400).send({ success: false, message: 'User/Proj not found!' });
     }
