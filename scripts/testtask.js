@@ -32,7 +32,7 @@ task("create", "creates a task")
     //     "0x21E0F5d54E45CE43f465a19AA3668F03be118CfC" // BUSD contract address
     //   );
     //   await taskContract.deployed();
-    console.log("TaskContract deployed to:", '0xBA0f437Dc55Bb2a56830d151F4Fe25bE03fcc778');
+    console.log("TaskContract deployed to:", '0xF674dCc2312998b77D6859056b9fA3283a52ddfb');
 
       // console.log("TaskContract deployed to:", taskContract.address);
     // fs.writeFileSync(ADDRESS_FILE,JSON.stringify("0xB35B57f55d8188460AC223E430Af3E463a691b4e"))

@@ -5,7 +5,7 @@ async function main(){
 
 const {deployer,hirer,freelancer} = await getNamedAccounts();
 const busdContract = await ethers.getContractFactory("MockBUSD");
-const busdToken = await busdContract.attach("0x21E0F5d54E45CE43f465a19AA3668F03be118CfC");
+const busdToken = await busdContract.attach("0x7846b8505127eF5701b531e95420449A52FD1390");
 // await busdToken.mint(deployer, ethers.utils.parseUnits("10000"));
 // await busdToken.mint(freelancer,ethers.utils.parseUnits("10000"));
 // await busdToken.mint(hirer, ethers.utils.parseUnits("10000"));

@@ -25,7 +25,7 @@ async function main() {
     hirer, //employer wallet address
     taskname,
     task_description, // task description
-    "0x21E0F5d54E45CE43f465a19AA3668F03be118CfC" // BUSD contract address
+    "0x7846b8505127eF5701b531e95420449A52FD1390" // BUSD contract address
   );
   await taskContract.deployed();
   console.log("TaskContract deployed to:", taskContract.address);

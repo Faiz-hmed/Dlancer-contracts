@@ -1,4 +1,2 @@
 -accomodate soft deadline 
 -integrate activateTask function 
--integrate recommendation system for projects 
--accomodate request for project
