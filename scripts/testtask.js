@@ -22,17 +22,19 @@ task("create", "creates a task")
     console.log(`employee:, ${args.employee}, amount:, ${args.amount}, deadline:, ${args.deadline}, employer:, ${args.employer}, taskDescription:, ${args.description}, taskname: ${args.name}`);
     const {deployer,freelancer,hirer} = await hre.getNamedAccounts();
 
-    // const taskContract = await TaskContract.deploy(
-    //     freelancer, // employee wallet address
-    //     amount, // reward amount in USD
-    //     deadline, //deadline 
-    //     hirer, //employer wallet address
-            // name,//name of the task
-    //     description, // task description
-    //     "0x21E0F5d54E45CE43f465a19AA3668F03be118CfC" // BUSD contract address
-    //   );
-    //   await taskContract.deployed();
-    console.log("TaskContract deployed to:", '0xF674dCc2312998b77D6859056b9fA3283a52ddfb');
+    const taskContract = await TaskContract.deploy(
+        freelancer, // employee wallet address
+        amount, // reward amount in USD
+        deadline, //deadline 
+        hirer, //employer wallet address
+        name,//name of the task
+        description, // task description
+        "0x7846b8505127eF5701b531e95420449A52FD1390" // BUSD contract address
+      );
+      await taskContract.deployed();
+    // console.log("TaskContract deployed to:", '0xF674dCc2312998b77D6859056b9fA3283a52ddfb');
+    console.log("TaskContract deployed to:", taskContract.address);
+
 
       // console.log("TaskContract deployed to:", taskContract.address);
     // fs.writeFileSync(ADDRESS_FILE,JSON.stringify("0xB35B57f55d8188460AC223E430Af3E463a691b4e"))

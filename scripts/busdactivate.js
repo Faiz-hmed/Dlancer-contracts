@@ -11,8 +11,8 @@ const busdToken = await busdContract.attach("0x7846b8505127eF5701b531e95420449A5
 // console.log(busdToken)
 // Approve the TaskContract to spend BUSD tokens on your behalf
 
-// await busdToken.mint(deployer, ethers.utils.parseUnits("10000"));
-// await busdToken.mint(freelancer,ethers.utils.parseUnits("10000"));
+await busdToken.mint(deployer, ethers.utils.parseUnits("10000"));
+await busdToken.mint(freelancer,ethers.utils.parseUnits("10000"));
 await busdToken.mint(hirer, ethers.utils.parseUnits("10000"));
 
 const dep = await hre.ethers.getSigners();
@@ -31,13 +31,15 @@ await busdToken.connect(dep[2]).approve(taskContractAddr, amount);
 
 // Call the activateTask function with BUSD token transfer
 // const taskContract = await ethers.getContractFactory("TaskContract");
+
 const task = await ethers.getContractAt("TaskContract",getLatestAddress(),hirer)
+
 // const task = await taskContract.attach(getLatestAddress());
 // const details = await task.getValues();
 // console.log(details) 
 // console.log(task)
 const done = await task.activateTask();
-// console.log(done)
+console.log(done)
 
 // const act = await busdToken.allowance(hirer,getLatestAddress());
 // const act = await task.viewReward();
