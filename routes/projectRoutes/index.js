@@ -166,7 +166,17 @@ router.get('/:projectid', async (req, res) => {
         return res.status(400).send({ success: false, message: 'Project not found!' });
     }
     return res.status(200).send(projDetail);
+
 });
+
+router.get('/gettask/:taskid', async (req, res) => {
+    try{
+        const task = await taskModel.findById(req.params.taskid);
+        res.status(200).json(task);
+        }catch(e){
+            res.status(500).json({success:false,message:e.message});
+        }
+})
 
 function similarity(userSkills, projectSkills) {
     const intersection = userSkills.filter(x => projectSkills.includes(x));
