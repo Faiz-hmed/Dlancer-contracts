@@ -64,10 +64,6 @@ const userSchema = new mongoose.Schema({
         default:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTpCKq1XnPYYDaUIlwlsvmLPZ-9-rdK28RToA&usqp=CAU"
     },
     certs: [certSchema],
-    // {
-    //     type: [mongoose.SchemaTypes.ObjectId],
-    //     ref: 'Certifications'
-    // },
     
     requests: {  //Keeps track of only the requests 'received'
         type: [mongoose.SchemaTypes.ObjectId],
@@ -75,6 +71,8 @@ const userSchema = new mongoose.Schema({
     },
     skills: [Number]
 });
+
+
 const reqSchema = new mongoose.Schema({
     user: {     // User who sent the request [From POV of Receiving user]
         type: mongoose.SchemaTypes.ObjectId,
@@ -91,15 +89,23 @@ const reqSchema = new mongoose.Schema({
     // } 
 });
 
+
 const projectSchema = new mongoose.Schema({
     ownerID: {
         type: mongoose.SchemaTypes.ObjectId,
         ref: 'Users',
         required: true
     },
+    dependencyInstallerCode : {
+        type: String,
+        required: true
+    },
     description:{
         type:String,
         required:true
+    },
+    githubRepo:{
+        type:String,
     },
     requiredSkills:{
         type: [String],
@@ -124,6 +130,7 @@ const projectSchema = new mongoose.Schema({
     }
 });
 
+
 const tasksSchema = new mongoose.Schema({
     projectID: {
         type: mongoose.SchemaTypes.ObjectId,
@@ -142,27 +149,41 @@ const tasksSchema = new mongoose.Schema({
         type:[String],
         required:true,
     },
-    // employee:{
-    //     type:String,
-    //     required:true,
-    // },
     contractAddress: {    // For storing the contract address of the task
         type: String,
         required:true
     },
-    // startTime: {
-    //     type: Date
-    // },
-    // endTime: {
-    //     type: Date,
-    //     required: true
-    // },
-    // taskDescription: {
-    //     type: String
-    // },
-    // isCompleted: Boolean
+    testIntegration : {
+        type: githubIntSchema,
+        // required: true
+    }
 });
 
+
+const githubIntSchema = new mongoose.Schema({
+    collabGithubProfile:{
+        type: String,
+        required: true
+    },
+    description4Collab : {
+        type: String,           //(Optional) Instructions to the contibutor(freelancer) to pass TC's, Eg, "Output into a single file"
+    },
+    tests: {
+        type: String,
+        required: true
+    },
+    hiddenTests: {
+        type: String            //(Optional)
+    },
+    testDestPath: {
+        type: String,                //Eg, "tests/suite1" (Relative to the root of the repo)
+        required: true
+    },
+    testRunnerCmd: {
+        type: String,               //Eg, "python3 test.py" (Inclusive of args & options, eg. "python3 test.py arg1 arg2")
+        required: true
+    }
+});
 
 
 module.exports.Requests = mongoose.model('Requests', reqSchema);

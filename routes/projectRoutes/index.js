@@ -114,7 +114,7 @@ async function taskInsert(tasks, projid, res){
     const qtasks = tasks.map(task => {return {projectID : projid, ...task}});
 
     try{
-        const retTasks = await taskModel.insertMany(qtasks);                         // might need to do: sequential task insertion
+        const retTasks = await taskModel.insertMany(qtasks);
         
         project.tasks = project.tasks.concat(retTasks.map(task => task.id));
 
