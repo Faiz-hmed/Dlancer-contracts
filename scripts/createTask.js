@@ -4,7 +4,7 @@ const fs = require('fs')
 const ADDRESS_FILE ='./constants.js';
 const ADDRESSES = "../frontend/constants/addresses.json";
 const ABI_FILE = "../frontend/constants/abi.json";
-const {getLatestAddress} = require('../helpers')
+const {getLatestAddress, getBusdAddress} = require('../helpers')
 
 
 async function main() {
@@ -14,7 +14,7 @@ async function main() {
   // const amount = ethers.utils.parseEther("0.02"); // send 1 ETH with the transaction
   const amount = ethers.utils.parseUnits("100")
   const employee = freelancer
-  const deadline = Math.floor(Date.now() / 1000) + 3600;
+  const deadline =  3600;
   const taskname = "Todo"
   const task_description="It is a cool task";
 
@@ -25,7 +25,7 @@ async function main() {
     hirer, //employer wallet address
     taskname,
     task_description, // task description
-    "0x7846b8505127eF5701b531e95420449A52FD1390" // BUSD contract address
+    getBusdAddress() // BUSD contract address
   );
   await taskContract.deployed();
   console.log("TaskContract deployed to:", taskContract.address);

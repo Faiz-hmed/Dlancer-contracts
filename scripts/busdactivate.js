@@ -1,5 +1,5 @@
 const { ethers,network, getNamedAccounts } = require("hardhat");
-const {getLatestAddress} = require('../helpers');
+const {getLatestAddress,getBusdAddress} = require('../helpers');
 
 async function main(){
 
@@ -7,7 +7,7 @@ async function main(){
 const {deployer,hirer,freelancer} = await getNamedAccounts();
 
 const busdContract = await ethers.getContractFactory("MockBUSD");
-const busdToken = await busdContract.attach("0x7846b8505127eF5701b531e95420449A52FD1390");
+const busdToken = await busdContract.attach(getBusdAddress());
 // console.log(busdToken)
 // Approve the TaskContract to spend BUSD tokens on your behalf
 
@@ -38,9 +38,11 @@ const task = await ethers.getContractAt("TaskContract",getLatestAddress(),hirer)
 // const details = await task.getValues();
 // console.log(details) 
 // console.log(task)
-const done = await task.activateTask();
-console.log(done)
-
+// const done = await task.activateTask();
+const d = await task.getValues()
+            
+console.log( await busdToken.balanceOf("0x6E485285C78f3A1d13c7d77a715b295047573A47"));
+console.log(await task.getBalance());
 // const act = await busdToken.allowance(hirer,getLatestAddress());
 // const act = await task.viewReward();
 
