@@ -160,9 +160,14 @@ router.delete('/:projectid', async (req, res) => {
             project.tasks = project.tasks.filter((task)=>{return taskid!==task.toString()});
             project.save();
         })
-        console.log("project del")
+        const task = await taskModel.findById(taskid);
+        console.log(task.freelancer)
+        const user= await userModel.findOne({walletID:task.freelancer})
+        console.log(user,task._id);
+        user.tasksAssigned = user.tasksAssigned.filter((t)=>{return t!=task._id.toString()});
+        console.log(user);
+        await user.save();
         await taskModel.findByIdAndDelete(taskid);
-        console.log("task del")
         res.status(200).json({success:true,message:"task successfully deleted"})
   }catch(e){
   console.error(e)
