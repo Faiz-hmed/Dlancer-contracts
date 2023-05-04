@@ -1,5 +1,5 @@
 const { ethers,network, getNamedAccounts } = require("hardhat");
-const {getLatestAddress} = require('../helpers');
+const {getLatestAddress, getBusdAddress} = require('../helpers');
 
 async function main(){
 
@@ -7,7 +7,7 @@ async function main(){
 // const TaskContract = await ethers.getContractFactory("TaskContract");
 const {deployer,hirer,freelancer} = await getNamedAccounts();
 const busdContract = await ethers.getContractFactory("MockBUSD");
-const busdToken = await busdContract.attach("0x21E0F5d54E45CE43f465a19AA3668F03be118CfC");
+const busdToken = await busdContract.attach(getBusdAddress());
 // const employer = ethers.provider.getSigner(hirer);
 const reward = ethers.utils.parseEther("1"); // set the reward to 1 ETH
 const amount = ethers.utils.parseEther("1"); // set the reward to 1 ETH

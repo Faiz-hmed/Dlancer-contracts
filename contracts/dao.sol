@@ -77,15 +77,23 @@ contract TaskContract {
     }
 
     function completeTask() public {
-        require(
-            msg.sender == employee,
-            "Only the employee can complete the task"
-        );
+        // require(
+        //     msg.sender == employee,
+        //     "Only the employee can complete the task"
+        // );
         require(block.timestamp <= deadline, "Deadline has passed");
         require(!cancelled, "Task has been cancelled");
 
         completed = true;
         busdToken.transfer(employee, reward);
+    }
+
+    function getRefund() public {
+        require(msg.sender == employer, "Only the employer can get refund");
+        require(!completed, "Task has been completed");
+        require(!cancelled, "Task has been cancelled");
+        cancelled = true;
+        busdToken.transfer(employer, reward);
     }
 
     function cancelTask() public {

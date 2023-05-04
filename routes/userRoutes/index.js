@@ -89,13 +89,14 @@ router.post("/signup", async (req, res) => {
     // Endpoint to register/add a new user
 
     //Request Body : {walletID, username, email, bio, location, skills}
-    const {walletID,username,email,bio,location,skills,certificates} = req.body;
+    const {walletID,username,email,bio,location,skills,certificates,image} = req.body;
 
     const user = new userModel({
         username:username,
         email:email,
         walletID:walletID,
         bio:bio,
+        image:image,
         location:location,
         skills:skills,
         certs: certificates,
@@ -242,7 +243,11 @@ router.get("/:walletid", async (req, res) => {
     const walletid = req.params.walletid;
     let user;
     try {
-        user = await userModel.findOne({walletID:walletid})
+        user = await userModel.findOne({walletID:walletid}).populate({
+            path: 'projects',
+            model: 'Projects',
+            select: 'projectName'
+            })
         // user = await userModel.findOne({_id: userId}).exec();         // TODO: handle CastError in case of fallthrough from project route - Done
     } catch(err){
         if(err.name === 'CastError'){

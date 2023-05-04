@@ -1,0 +1,3 @@
+-accomodate soft deadline 
+-integrate cancel task and complete task
+ 

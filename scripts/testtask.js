@@ -4,7 +4,7 @@ const fs = require('fs')
 const ADDRESS_FILE ='./constants.js';
 const ADDRESSES = "../frontend/constants/addresses.json";
 const ABI_FILE = "../frontend/constants/abi.json";
-const {getLatestAddress} = require('../helpers')
+const {getLatestAddress,getBusdAddress} = require('../helpers')
 
 task("create", "creates a task")
   .addParam("employee","employee wallet address")
@@ -15,24 +15,28 @@ task("create", "creates a task")
   .addParam("name", "task name")
   .setAction(async (args, hre) => {
     const TaskContract = await hre.ethers.getContractFactory("TaskContract");
-    const amount = ethers.utils.parseUnits("100")
-    const deadline = Math.floor(Date.now() / 1000) + 3600;
+    const amount = ethers.utils.parseUnits(args.amount)
+    // const deadline = Math.floor(Date.now() / 1000) + 3600*
+    // console.log(args.deadline, typeof args.deadline, parseInt(args.deadline)+3600)
+    const deadline = Math.floor(Date.now() / 1000) + 3600*parseInt(args.deadline)
     const name = args.name;
-    const description=args.description || "It is a cool task";
+    const description=args.description;
     console.log(`employee:, ${args.employee}, amount:, ${args.amount}, deadline:, ${args.deadline}, employer:, ${args.employer}, taskDescription:, ${args.description}, taskname: ${args.name}`);
     const {deployer,freelancer,hirer} = await hre.getNamedAccounts();
+    const busd = getBusdAddress();
+    const taskContract = await TaskContract.deploy(
+        freelancer, // employee wallet address
+        amount, // reward amount in USD
+        deadline, //deadline 
+        hirer, //employer wallet address
+        name,//name of the task
+        description, // task description
+        busd // BUSD contract address
+      );
+      await taskContract.deployed();
+    // console.log("TaskContract deployed to:", '0xF674dCc2312998b77D6859056b9fA3283a52ddfb');
+    console.log("TaskContract deployed to:", taskContract.address);
 
-    // const taskContract = await TaskContract.deploy(
-    //     freelancer, // employee wallet address
-    //     amount, // reward amount in USD
-    //     deadline, //deadline 
-    //     hirer, //employer wallet address
-            // name,//name of the task
-    //     description, // task description
-    //     "0x21E0F5d54E45CE43f465a19AA3668F03be118CfC" // BUSD contract address
-    //   );
-    //   await taskContract.deployed();
-    console.log("TaskContract deployed to:", '0xBA0f437Dc55Bb2a56830d151F4Fe25bE03fcc778');
 
       // console.log("TaskContract deployed to:", taskContract.address);
     // fs.writeFileSync(ADDRESS_FILE,JSON.stringify("0xB35B57f55d8188460AC223E430Af3E463a691b4e"))

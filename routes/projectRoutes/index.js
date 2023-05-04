@@ -10,14 +10,35 @@ const requestsModel = Models.Requests;
 
 router.get('/',async(req,res)=>{
     const walletID = req.query.walletID;
+    // if(!walletID)
+    //     projectModel.find({}).then((projects)=>{
+    //         console.log(projects)
+    //         res.status(200).json(projects);
+    //     }).catch((e)=>{
+    //         res.status(500).json({success:false,message:e.message})
+    //     })
+    // else
     userModel.findOne({walletID:walletID}).then((user)=>{
-        projectModel.find({ownerID:user._id}).then((certificates)=>{
-            res.status(200).json(certificates);
+        projectModel.find({ownerID:user._id}).then((projects)=>{
+            res.status(200).json(projects);
         })
     }).catch((e)=>{
         res.status(500).json({success:false,message:e.message})
     })
 })
+
+router.get('/searchprojects',async(req,res)=>{
+    const walletID = req.query.walletID;
+        const user = await userModel.findOne({walletID:walletID});
+        projectModel.find({}).then((projects)=>{
+            const recommended = recommendUsersForProject(user,projects);
+            res.status(200).json(recommended);
+        }).catch((e)=>{
+            res.status(500).json({success:false,message:e.message})
+        })
+ 
+})
+
 
 router.get('/otherprojects',async(req,res)=>{
     const walletID = req.query.walletID;
@@ -145,8 +166,39 @@ router.get('/:projectid', async (req, res) => {
         return res.status(400).send({ success: false, message: 'Project not found!' });
     }
     return res.status(200).send(projDetail);
+
 });
 
+router.get('/gettask/:taskid', async (req, res) => {
+    try{
+        const task = await taskModel.findById(req.params.taskid);
+        res.status(200).json(task);
+        }catch(e){
+            res.status(500).json({success:false,message:e.message});
+        }
+})
+
+function similarity(userSkills, projectSkills) {
+    const intersection = userSkills.filter(x => projectSkills.includes(x));
+    const union = [...new Set([...userSkills, ...projectSkills])];
+    return intersection.length / union.length;
+  }
+  
+  // Define recommendation function
+  function recommendUsersForProject(users,projects) {
+    const userSkills = users.skills;
+    const recommendations = [];
+  
+    for (const project of projects) {
+      const projectSkills = project.requiredSkills;
+      const sim = similarity(userSkills, projectSkills);
+      recommendations.push({ project, sim });
+    }
+  
+    recommendations.sort((a, b) => b.sim - a.sim);
+    return recommendations.map(x=>{x.project.sim = x.sim; return x.project})
+    // return recommendations.slice(0, 3).map(x => x.user.name);
+  }
 
 
 module.exports = router;

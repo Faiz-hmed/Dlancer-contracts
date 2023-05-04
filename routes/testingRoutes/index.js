@@ -1,4 +1,5 @@
 const express = require('express');
+require('dotenv').config();
 const router = express.Router();
 const fs=  require('fs')
 const Models = require('../../Schema/index.js');
@@ -12,7 +13,9 @@ const natural = require('natural');
 const { CountVectorizer } = natural;
 // const exec = require("child_process");
 const ADDRESS_FILE = 'address.txt';
-
+const { ethers} = require('hardhat');
+const { getLatestAddress } = require('../../helpers.js');
+const {abi} = require('../../../frontend/constants/index.js')
 
 
 function similarity(userSkills, projectSkills) {
@@ -96,6 +99,25 @@ router.get('/recommendprojects/:projectid', async(req,res)=>{
   res.status(200).json(rec)
 })
 
+router.post('/complete/:taskid', async(req, res) => {
+  try{
+    const provider = new ethers.providers.JsonRpcProvider(process.env.GANACHE_RPC);
+    const { address } = req.body;
+    const contract = new ethers.Contract(address, abi, provider);
+
+    const privateKey = `0x${process.env.ADMIN_PRIVATE_KEY}`;
+    const signer = new ethers.Wallet(privateKey, provider);
+    const connectedContract = contract.connect(signer);
+
+    const tx = await connectedContract.completeTask();
+    const receipt = await provider.waitForTransaction(tx.hash);
+    res.json({ receipt });
+  }catch(e){
+    console.log(e) 
+    res.status(500).json({success:false,message:e.message})
+  }
+});
+
 router.get('/recommendtasks/:taskid', async(req,res)=>{
   // Install required libraries
   // console.log(req.params.taskid)
@@ -146,7 +168,6 @@ router.post('/:projectid', async (req, res) => {                            // D
   res.status(500).json({success:false,message:"task could not be created"})
   }
 });
-
 
 router.get('/', async (req, res) => {
       // Return a success response to the client

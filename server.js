@@ -4,9 +4,9 @@ require('dotenv').config();
 const cors = require('cors');
 
 //Faiz database 
-mongoose.connect('mongodb://localhost:27017/DLancer', {useNewUrlParser: true, useUnifiedTopology: true});
+// mongoose.connect('mongodb://localhost:27017/DLancer', {useNewUrlParser: true, useUnifiedTopology: true});
 //Shan database
-// mongoose.connect(process.env.MONGOSHAN, {useNewUrlParser: true, useUnifiedTopology: true})
+mongoose.connect(process.env.MONGOSHAN, {useNewUrlParser: true, useUnifiedTopology: true})
 const userRoutes = require('./routes/userRoutes/index.js');
 const reqRoutes = require('./routes/userRoutes/requests.js');
 const projRoutes = require('./routes/projectRoutes/index.js');
