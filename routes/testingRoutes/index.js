@@ -25,19 +25,42 @@ function similarity(userSkills, projectSkills) {
 }
 
 // Define recommendation function
-function recommendUsersForProject(users,project) {
+// function recommendUsersForProject(users,project) {
+//   const projectSkills = project.requiredSkills;
+//   const recommendations = [];
+
+//   for (const user of users) {
+//     const userSkills = user.skills;
+//     const sim = similarity(userSkills, projectSkills);
+//     recommendations.push({ user, sim });
+//   }
+
+//   recommendations.sort((a, b) => b.sim - a.sim);
+//   return recommendations.map(x=>{x.user.sim = x.sim; return x.user})
+//   // return recommendations.slice(0, 3).map(x => x.user.name);
+// }
+function recommendUsersForProject(users, project) {
   const projectSkills = project.requiredSkills;
   const recommendations = [];
 
   for (const user of users) {
     const userSkills = user.skills;
     const sim = similarity(userSkills, projectSkills);
-    recommendations.push({ user, sim });
+    var ratio;
+    if(!user.tasksCompleted.length && !user.tasksAssigned.length)
+      ratio = 0.2;
+    else
+      ratio = user.tasksCompleted.length / user.tasksAssigned.length;
+    const score = 0.5 * sim + 0.5 * ratio;
+    recommendations.push({ user, sim, ratio, score });
   }
 
-  recommendations.sort((a, b) => b.sim - a.sim);
-  return recommendations.map(x=>{x.user.sim = x.sim; return x.user})
-  // return recommendations.slice(0, 3).map(x => x.user.name);
+  recommendations.sort((a, b) => b.score - a.score);
+  return recommendations.map(x => {
+    x.user.sim = x.sim;
+    x.user.ratio = x.ratio;
+    return x.user;
+  });
 }
 
 
@@ -109,6 +132,7 @@ router.post('/complete/:taskid', async(req, res) => {
     const signer = new ethers.Wallet(privateKey, provider);
     const connectedContract = contract.connect(signer);
 
+    //main thing
     const tx = await connectedContract.completeTask();
     const receipt = await provider.waitForTransaction(tx.hash);
     res.json({ receipt });
