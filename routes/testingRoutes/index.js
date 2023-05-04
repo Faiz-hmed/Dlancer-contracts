@@ -69,7 +69,7 @@ router.post('/', (req, res) => {
   
 });
 
-router.get('/collaborators', async (req, res) => {
+router.get('/collaborators', async (req, res) => {                    // Duplicate
   const projectid = req.query.projectid;
   console.log(projectid)
   try{
@@ -125,7 +125,7 @@ router.delete('/:projectid', async (req, res) => {
 });
 
 
-router.post('/:projectid', async (req, res) => {
+router.post('/:projectid', async (req, res) => {                            // Duplicate
   const { employee, contractAddress,name,requiredSkills } = req.body;
   try{
 

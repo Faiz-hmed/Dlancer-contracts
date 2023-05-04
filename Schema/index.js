@@ -65,7 +65,7 @@ const userSchema = new mongoose.Schema({
     },
     certs: [certSchema],
     
-    requests: {  //Keeps track of only the requests 'received'
+    requests: {                     //Keeps track of only the requests 'received'
         type: [mongoose.SchemaTypes.ObjectId],
         ref: 'Requests'
     },
@@ -74,7 +74,7 @@ const userSchema = new mongoose.Schema({
 
 
 const reqSchema = new mongoose.Schema({
-    user: {     // User who sent the request [From POV of Receiving user]
+    user: {                         // User who sent the request [From POV of Receiving user]
         type: mongoose.SchemaTypes.ObjectId,
         ref: 'Users',
         required: true
@@ -83,10 +83,6 @@ const reqSchema = new mongoose.Schema({
         type: mongoose.SchemaTypes.ObjectId,
         ref: 'Projects'
     },
-    // mode:{      // To specify if the request is to invite for collaboration or apply for project
-    //     type:Number,
-    //     default:0,
-    // } 
 });
 
 
@@ -96,7 +92,7 @@ const projectSchema = new mongoose.Schema({
         ref: 'Users',
         required: true
     },
-    dependencyInstallerCode : {
+    dependencyInstallerCmd : {
         type: String,
         required: true
     },
@@ -106,6 +102,15 @@ const projectSchema = new mongoose.Schema({
     },
     githubRepo:{
         type:String,
+        // required:true
+    },
+    githubRepoOwner:{
+        type:String,
+        // required:true
+    },
+    workflowFile: {
+        type: String,
+        // required: true
     },
     requiredSkills:{
         type: [String],
@@ -125,7 +130,7 @@ const projectSchema = new mongoose.Schema({
     },
     status:{
         type: Number,
-        enum: [0, 1, 2],     // 0: Incomplete, 1: In Progress, 2: Completed
+        enum: [0, 1, 2],            // 0: Incomplete, 1: In Progress, 2: Completed
         default: 0
     }
 });
@@ -149,12 +154,13 @@ const tasksSchema = new mongoose.Schema({
         type:[String],
         required:true,
     },
-    contractAddress: {    // For storing the contract address of the task
+    contractAddress: {              // For storing the contract address of the task
         type: String,
         required:true
     },
     testIntegration : {
-        type: githubIntSchema,
+        type: mongoose.SchemaTypes.ObjectId,
+        ref: 'TestIntegrations'
         // required: true
     }
 });
@@ -165,24 +171,21 @@ const githubIntSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    description4Collab : {
-        type: String,           //(Optional) Instructions to the contibutor(freelancer) to pass TC's, Eg, "Output into a single file"
-    },
     tests: {
         type: String,
         required: true
     },
     hiddenTests: {
-        type: String            //(Optional)
+        type: String                //(Optional)
     },
     testDestPath: {
-        type: String,                //Eg, "tests/suite1" (Relative to the root of the repo)
+        type: String,               //Eg, "tests/suite1" (Relative to the root of the repo)
         required: true
     },
     testRunnerCmd: {
         type: String,               //Eg, "python3 test.py" (Inclusive of args & options, eg. "python3 test.py arg1 arg2")
         required: true
-    }
+    },
 });
 
 

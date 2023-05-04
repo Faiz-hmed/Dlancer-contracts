@@ -23,6 +23,5 @@ async function verifyCollab(repoOwner, repoName) {
     }
 }
 
-// TODO: Add the branch protection rule and status check
 
 // TODO: Check if branch protection rule & status check is present 
