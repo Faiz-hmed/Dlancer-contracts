@@ -23,6 +23,7 @@ app.use("/api/users", userRoutes);
 app.use("/api/req", reqRoutes);
 app.use("/api/projects", projRoutes);
 app.use("/api/tasks",testRoutes);
+app.use("/api/gh",ghRoutes);
 
 const PORT = process.env.PORT || 5000;
 try{

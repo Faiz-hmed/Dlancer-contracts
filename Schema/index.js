@@ -107,10 +107,6 @@ const projectSchema = new mongoose.Schema({
         type:String,
         // required:true
     },
-    workflowFile: {
-        type: String,
-        // required: true
-    },
     requiredSkills:{
         type: [String],
     },

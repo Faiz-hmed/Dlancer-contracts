@@ -153,10 +153,9 @@ router.post('/:projectid', async (req, res) => {                            // c
   try{
     
     let testintegration;
-
-    if(!hiddenTests && !visibleTests && !depInstaller && !depDest && !depDestFile && !runner)
+    if(!hiddenTests && !visibleTests && !depInstaller && !testDest && !testDestFile && !runner){
       testintegration = await IntegrationModel.create({dependencyInstallerCmd: depInstaller, testDestPath: testDest, testDestFileName: testDestFile, testRunnerCmd: runner, hiddenTests: hiddenTests, visibleTests: visibleTests});
-
+    }
 
     const projectid = new mongoose.Types.ObjectId(req.params.projectid);
         const newTask = new taskModel({projectID:projectid,taskName:name,freelancer:employee,contractAddress:contractAddress,requiredSkills:requiredSkills, testIntegration: testintegration.id});
