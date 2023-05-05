@@ -18,11 +18,6 @@ const { getLatestAddress } = require('../../helpers.js');
 const {abi} = require('../../../frontend/constants/index.js')
 
 
-function similarity(userSkills, projectSkills) {
-  const intersection = userSkills.filter(x => projectSkills.includes(x));
-  const union = [...new Set([...userSkills, ...projectSkills])];
-  return intersection.length / union.length;
-}
 
 // Define recommendation function
 // function recommendUsersForProject(users,project) {
@@ -39,6 +34,14 @@ function similarity(userSkills, projectSkills) {
 //   return recommendations.map(x=>{x.user.sim = x.sim; return x.user})
 //   // return recommendations.slice(0, 3).map(x => x.user.name);
 // }
+
+
+function similarity(userSkills, projectSkills) {
+  const intersection = userSkills.filter(x => projectSkills.includes(x));
+  const union = [...new Set([...userSkills, ...projectSkills])];
+  return intersection.length / union.length;
+}
+
 function recommendUsersForProject(users, project) {
   const projectSkills = project.requiredSkills;
   const recommendations = [];
@@ -161,12 +164,12 @@ router.delete('/:projectid', async (req, res) => {
             project.save();
         })
         const task = await taskModel.findById(taskid);
-        console.log(task.freelancer)
-        const user= await userModel.findOne({walletID:task.freelancer})
-        console.log(user,task._id);
-        user.tasksAssigned = user.tasksAssigned.filter((t)=>{return t!=task._id.toString()});
-        console.log(user);
-        await user.save();
+        // console.log(task.freelancer)
+        // const user= await userModel.findOne({walletID:task.freelancer})
+        // console.log(user,task._id);
+        // user.tasksAssigned = user.tasksAssigned.filter((t)=>{return t!=task._id.toString()});
+        // console.log(user);
+        // await user.save();
         await taskModel.findByIdAndDelete(taskid);
         res.status(200).json({success:true,message:"task successfully deleted"})
   }catch(e){
