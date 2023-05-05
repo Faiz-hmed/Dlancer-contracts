@@ -80,7 +80,7 @@ router.get('/collaborators', async (req, res) => {                    // Duplica
       .populate({
       path: 'collaborators',
       model: 'Users',
-      select: 'walletID username'
+      select: 'walletID username ghUserName'
       })
       .exec();
       console.log(collaborators)

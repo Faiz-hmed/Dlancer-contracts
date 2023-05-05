@@ -24,6 +24,9 @@ const certSchema = new mongoose.Schema({
 
 
 const userSchema = new mongoose.Schema({
+    ghUserName :{
+        type:String,
+    },
     username: {
         type: String,
         required: true
@@ -94,7 +97,7 @@ const projectSchema = new mongoose.Schema({
     },
     dependencyInstallerCmd : {
         type: String,
-        required: true
+        // required: true
     },
     description:{
         type:String,
@@ -160,17 +163,13 @@ const tasksSchema = new mongoose.Schema({
     },
     testIntegration : {
         type: mongoose.SchemaTypes.ObjectId,
-        ref: 'TestIntegrations'
+        ref: 'Integration'
         // required: true
     }
 });
 
 
 const githubIntSchema = new mongoose.Schema({
-    collabGithubProfile:{
-        type: String,
-        required: true
-    },
     tests: {
         type: String,
         required: true
@@ -188,7 +187,7 @@ const githubIntSchema = new mongoose.Schema({
     },
 });
 
-
+module.exports.Integration = mongoose.model('Integration', githubIntSchema);
 module.exports.Requests = mongoose.model('Requests', reqSchema);
 module.exports.Users = mongoose.model('Users', userSchema);
 module.exports.Projects = mongoose.model('Projects', projectSchema);

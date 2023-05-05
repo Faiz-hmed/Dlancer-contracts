@@ -39,7 +39,7 @@ const task = await ethers.getContractAt("TaskContract",getLatestAddress(),hirer)
 // console.log(details) 
 // console.log(task)
 // const done = await task.activateTask();
-const d = await task.getValues()
+// const d = await task.getValues()
             
 console.log( await busdToken.balanceOf("0x6E485285C78f3A1d13c7d77a715b295047573A47"));
 console.log(await task.getBalance());

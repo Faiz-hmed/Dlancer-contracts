@@ -22,10 +22,11 @@ router.get("/:walletID", async (req, res) => {
 
         let request = await requestsModel.findOne({_id: String(requestId)}).populate({path: 'project',select: 'projectName ownerID'});
         const userobj = await userModel.findById(request.user,{username:1,walletID:1,_id:0});
+        
         let mode = 1;   // Request (default)
         if(request.project.ownerID.toString() === request.user.toString())         
             mode = 0;   // Invite
-        console.log(request.project.ownerID.toString(),request.user.toString(),request.project.ownerID.toString() === request.user.toString())
+        
         return {...request, mode: mode,username:userobj.username,walletID:userobj.walletID};
     }));
 
