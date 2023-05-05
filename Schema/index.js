@@ -95,15 +95,11 @@ const projectSchema = new mongoose.Schema({
         ref: 'Users',
         required: true
     },
-    dependencyInstallerCmd : {
-        type: String,
-        // required: true
-    },
     description:{
         type:String,
         required:true
     },
-    githubRepo:{
+    githubDefaultBranch:{
         type:String,
         // required:true
     },
@@ -170,15 +166,22 @@ const tasksSchema = new mongoose.Schema({
 
 
 const githubIntSchema = new mongoose.Schema({
-    tests: {
+    dependencyInstallerCmd : {
+        type: String,
+        // required: true
+    },
+    visibleTests: {
         type: String,
         required: true
     },
     hiddenTests: {
         type: String                //(Optional)
     },
+    testDestFileName : {
+        type: String,               //Eg, "test.py"
+    },
     testDestPath: {
-        type: String,               //Eg, "tests/suite1" (Relative to the root of the repo)
+        type: String,               //Eg, "tests/suite1" (Relative to the root of the repo, should be a directory)
         required: true
     },
     testRunnerCmd: {

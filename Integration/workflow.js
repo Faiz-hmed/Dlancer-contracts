@@ -4,13 +4,12 @@ const yaml = require('js-yaml')
 const fs = require('fs');
 const fetch = require('node-fetch');
 
-async function commitWorkflow(repoName, repoOwner, depInstallCmd){
+async function commitWorkflow(repoName, default_branch ,repoOwner, depInstallCmd){
 
     repoName = String(repoName);
     repoOwner = String(repoOwner);
 
     const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
-    const default_branch = 'main';
 
     let res;
 

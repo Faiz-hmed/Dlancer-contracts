@@ -11,6 +11,7 @@ const userRoutes = require('./routes/userRoutes/index.js');
 const reqRoutes = require('./routes/userRoutes/requests.js');
 const projRoutes = require('./routes/projectRoutes/index.js');
 const testRoutes = require('./routes/testingRoutes/index.js');
+const ghRoutes = require('./routes/ghRoutes/index.js');
 const morgan = require('morgan');
 
 const app = express();
