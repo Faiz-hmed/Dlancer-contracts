@@ -104,43 +104,43 @@ router.post('/:walletID', async (req, res) => {
 });
 
 
-// router.post('/:walletID', async (req, res) => {
-//     // Enpoint to create a new project w/o tasks
+router.post('/:walletID', async (req, res) => {
+    // Enpoint to create a new project w/o tasks
 
-//     //Request Body : {userid, projName, description, skills, tasks, status(0/1/2) }
-//     const {projName,description,skills, repo, branch} = req.body;
+    //Request Body : {userid, projName, description, skills, tasks, status(0/1/2) }
+    const {projName,description,skills, repo, branch} = req.body;
 
-//     const repoName = repo.split('/').at(-1);
-//     const repoOwner = repo.split('/').at(-2);
+    const repoName = repo.split('/').at(-1);
+    const repoOwner = repo.split('/').at(-2);
 
-//     const user = await userModel.findOne({walletID:req.params.walletID}).exec();
-//     console.log({ownerID: user._id, projectName: projName, description: description, requiredSkills: skills})
+    const user = await userModel.findOne({walletID:req.params.walletID}).exec();
+    console.log({ownerID: user._id, projectName: projName, description: description, requiredSkills: skills})
 
-//     if(!Array.isArray(skills)){
-//         return res.status(400).send({ success: false, message: 'Skills must be an array!' });
-//     }
-//     const proj = new projectModel({ownerID: user._id, projectName: projName, description: description, requiredSkills: skills, githubRepo: repo, githubDefaultBranch: branch});
-//     user.projects.push(proj._id);
-//     // TODO: Add the project into the user's projects array - DONE
+    if(!Array.isArray(skills)){
+        return res.status(400).send({ success: false, message: 'Skills must be an array!' });
+    }
+    const proj = new projectModel({ownerID: user._id, projectName: projName, description: description, requiredSkills: skills, githubRepo: repo, githubDefaultBranch: branch});
+    user.projects.push(proj._id);
+    // TODO: Add the project into the user's projects array - DONE
 
-//     try{
-//         await Promise.all([proj.save(), user.save()]);
-//         console.log(repoName,branch,repoOwner,repo,repo.split('/'))
-//         // await commitWorkflow(repoName, branch, repoOwner, repo);
+    try{
+        await Promise.all([proj.save(), user.save()]);
+        console.log(repoName,branch,repoOwner,repo,repo.split('/'))
+        // await commitWorkflow(repoName, branch, repoOwner, repo);
 
-//         res.status(200).send({ success: true, message: 'Project added successfully!' });
+        res.status(200).send({ success: true, message: 'Project added successfully!' });
 
-//     }catch(err){
-//         console.error(err)
-//         return res.status(400).send({ success: false, message: err.message+err.name });
-//     }
+    }catch(err){
+        console.error(err)
+        return res.status(400).send({ success: false, message: err.message+err.name });
+    }
 
-//     //Save Project to db, and continue if and only if successful && tasks are present
-//     // if(!tasks)
-//     //     return res.status(200).send({ success: true, message: 'Project added successfully!' });
+    //Save Project to db, and continue if and only if successful && tasks are present
+    // if(!tasks)
+    //     return res.status(200).send({ success: true, message: 'Project added successfully!' });
 
-//     // await taskInsert(tasks, proj.id, res);
-// });
+    // await taskInsert(tasks, proj.id, res);
+});
 
 router.post('/tasks', async (req, res) => {
     // Endpoint to add tasks to a project
