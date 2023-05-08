@@ -6,6 +6,7 @@ const Models = require('../../Schema/index.js');
 const taskModel = Models.Tasks;
 const projectModel = Models.Projects;
 const userModel = Models.Users;
+const IntegrationModel = Models.Integration;
 const { exec } = require("child_process");
 const { default: mongoose, Model } = require('mongoose');
 const Matrix = require('ml-matrix');
@@ -98,7 +99,7 @@ router.post('/', (req, res) => {
   
 });
 
-router.get('/collaborators', async (req, res) => {
+router.get('/collaborators', async (req, res) => {                    // Duplicate
   const projectid = req.query.projectid;
   console.log(projectid)
   try{
@@ -106,7 +107,7 @@ router.get('/collaborators', async (req, res) => {
       .populate({
       path: 'collaborators',
       model: 'Users',
-      select: 'walletID username'
+      select: 'walletID username ghUserName'
       })
       .exec();
       console.log(collaborators)
@@ -179,12 +180,17 @@ router.delete('/:projectid', async (req, res) => {
 });
 
 
-router.post('/:projectid', async (req, res) => {
-  const { employee, contractAddress,name,requiredSkills } = req.body;
+router.post('/:projectid', async (req, res) => {                            // create tasks
+  const { employee, contractAddress,name,requiredSkills, hiddenTests, visibleTests, depInstaller, testDest, testDestFile, runner } = req.body;
   try{
+    
+    let testintegration;
+    if((hiddenTests || visibleTests) && depInstaller && testDest && testDestFile && runner){
+      testintegration = await IntegrationModel.create({dependencyInstallerCmd: depInstaller, testDestPath: testDest, testDestFileName: testDestFile, testRunnerCmd: runner, hiddenTests: hiddenTests, visibleTests: visibleTests});
+    }
 
     const projectid = new mongoose.Types.ObjectId(req.params.projectid);
-        const newTask = new taskModel({projectID:projectid,taskName:name,freelancer:employee,contractAddress:contractAddress,requiredSkills:requiredSkills});
+        const newTask = new taskModel({projectID:projectid,taskName:name,freelancer:employee,contractAddress:contractAddress,requiredSkills:requiredSkills, testIntegration: testintegration?.id});
         await newTask.save()
         projectModel.findById(req.params.projectid).then(async (project)=>{
           project.tasks.push(newTask._id);

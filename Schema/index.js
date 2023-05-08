@@ -24,6 +24,9 @@ const certSchema = new mongoose.Schema({
 
 
 const userSchema = new mongoose.Schema({
+    ghUserName :{
+        type:String,
+    },
     username: {
         type: String,
         required: true
@@ -64,19 +67,17 @@ const userSchema = new mongoose.Schema({
         default:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTpCKq1XnPYYDaUIlwlsvmLPZ-9-rdK28RToA&usqp=CAU"
     },
     certs: [certSchema],
-    // {
-    //     type: [mongoose.SchemaTypes.ObjectId],
-    //     ref: 'Certifications'
-    // },
     
-    requests: {  //Keeps track of only the requests 'received'
+    requests: {                     //Keeps track of only the requests 'received'
         type: [mongoose.SchemaTypes.ObjectId],
         ref: 'Requests'
     },
     skills: [Number]
 });
+
+
 const reqSchema = new mongoose.Schema({
-    user: {     // User who sent the request [From POV of Receiving user]
+    user: {                         // User who sent the request [From POV of Receiving user]
         type: mongoose.SchemaTypes.ObjectId,
         ref: 'Users',
         required: true
@@ -85,11 +86,8 @@ const reqSchema = new mongoose.Schema({
         type: mongoose.SchemaTypes.ObjectId,
         ref: 'Projects'
     },
-    // mode:{      // To specify if the request is to invite for collaboration or apply for project
-    //     type:Number,
-    //     default:0,
-    // } 
 });
+
 
 const projectSchema = new mongoose.Schema({
     ownerID: {
@@ -100,6 +98,14 @@ const projectSchema = new mongoose.Schema({
     description:{
         type:String,
         required:true
+    },
+    githubDefaultBranch:{
+        type:String,
+        // required:true
+    },
+    githubRepoOwner:{
+        type:String,
+        // required:true
     },
     requiredSkills:{
         type: [String],
@@ -119,16 +125,21 @@ const projectSchema = new mongoose.Schema({
     },
     status:{
         type: Number,
-        enum: [0, 1, 2],     // 0: Incomplete, 1: In Progress, 2: Completed
+        enum: [0, 1, 2],            // 0: Incomplete, 1: In Progress, 2: Completed
         default: 0
     }
 });
+
 
 const tasksSchema = new mongoose.Schema({
     projectID: {
         type: mongoose.SchemaTypes.ObjectId,
         ref: 'Projects',
         required: true
+    },
+    code:{
+        type: String,
+        default:''
     },
     freelancer: {
         type: String,
@@ -142,29 +153,44 @@ const tasksSchema = new mongoose.Schema({
         type:[String],
         required:true,
     },
-    // employee:{
-    //     type:String,
-    //     required:true,
-    // },
-    contractAddress: {    // For storing the contract address of the task
+    contractAddress: {              // For storing the contract address of the task
         type: String,
         required:true
     },
-    // startTime: {
-    //     type: Date
-    // },
-    // endTime: {
-    //     type: Date,
-    //     required: true
-    // },
-    // taskDescription: {
-    //     type: String
-    // },
-    // isCompleted: Boolean
+    testIntegration : {
+        type: mongoose.SchemaTypes.ObjectId,
+        ref: 'Integration'
+        // required: true
+    }
 });
 
 
+const githubIntSchema = new mongoose.Schema({
+    dependencyInstallerCmd : {
+        type: String,
+        // required: true
+    },
+    visibleTests: {
+        type: String,
+        required: true
+    },
+    hiddenTests: {
+        type: String                //(Optional)
+    },
+    testDestFileName : {
+        type: String,               //Eg, "test.py"
+    },
+    testDestPath: {
+        type: String,               //Eg, "tests/suite1" (Relative to the root of the repo, should be a directory)
+        required: true
+    },
+    testRunnerCmd: {
+        type: String,               //Eg, "python3 test.py" (Inclusive of args & options, eg. "python3 test.py arg1 arg2")
+        required: true
+    },
+});
 
+module.exports.Integration = mongoose.model('Integration', githubIntSchema);
 module.exports.Requests = mongoose.model('Requests', reqSchema);
 module.exports.Users = mongoose.model('Users', userSchema);
 module.exports.Projects = mongoose.model('Projects', projectSchema);

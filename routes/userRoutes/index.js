@@ -89,9 +89,10 @@ router.post("/signup", async (req, res) => {
     // Endpoint to register/add a new user
 
     //Request Body : {walletID, username, email, bio, location, skills}
-    const {walletID,username,email,bio,location,skills,certificates,image} = req.body;
+    const {walletID,username,email,bio,location,skills,certificates,image, ghUserName} = req.body;
 
     const user = new userModel({
+        ghUserName: ghUserName,
         username:username,
         email:email,
         walletID:walletID,
@@ -100,7 +101,7 @@ router.post("/signup", async (req, res) => {
         location:location,
         skills:skills,
         certs: certificates,
-      });
+    });
 
     try{
         await user.save()
