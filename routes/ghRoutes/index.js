@@ -15,7 +15,7 @@ const userModel = Models.Users;
 // To get all required info by the fetch  script
 router.get('/task/:taskid', async (req, res)=>{
     const {taskid} = req.params;
-    
+
     const task = await taskModel.findOne({_id: taskid});
     const project = await projectModel.findOne({_id: task.projectID});
 
@@ -35,7 +35,7 @@ router.get('/task/:taskid', async (req, res)=>{
 
 // To complete the task
 router.post('/task', async (req, res)=>{
-    const {repoName, repoOwner, taskid, prAuthor, prNum, prTitle, prDescription, tests, testDestPath, testDestFileName} = req.body;
+    const {repoName, repoOwner, taskid, prAuthor, prNum, prTitle, prDescription} = req.body;
     
     const task  = await taskModel.findOne({_id: taskid});
     const assignedUserGhUname = await userModel.findOne({walletID: task.freelancer},{ghUserName:1}).exec();
@@ -43,6 +43,9 @@ router.post('/task', async (req, res)=>{
     if(assignedUserGhUname !== prAuthor){
         return res.status(401).json({message: "Unauthorized"});
     }
+    const tests = task.testIntegration.visibleTests + "\n" + task.testIntegration.hiddenTests;
+    const testDestPath = task.testIntegration.testDestPath;
+    const testDestFileName = task.testIntegration.testDestFileName;
 
     try {
         await merge(repoName, repoOwner, prNum, prTitle, prDescription);
