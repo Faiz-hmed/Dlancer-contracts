@@ -93,10 +93,9 @@ router.post('/', (req, res) => {
         return res.status(500).json({success:false,message:"contract could not be deployed"})
       }
     }
-    );;
+    );
   
-  // Define project data
-  
+ 
 });
 
 router.get('/collaborators', async (req, res) => {                    // Duplicate

@@ -14,7 +14,6 @@ async function merge(repoName, repoOwner, prNum, title, message){
         }
     });
 
-    console.log(res);
 }
 
 module.exports = merge;

@@ -24,7 +24,7 @@ router.get('/task/:taskid', async (req, res)=>{
     await task.populate('testIntegration');
     
     let data = {};
-
+    console.log(task)
     data['dep_installer'] = task.testIntegration.dependencyInstallerCmd;
     data['test_dest_path'] = task.testIntegration.testDestPath;
     data['test_dest_file_name'] = task.testIntegration.testDestFileName;
@@ -40,9 +40,10 @@ router.post('/task', async (req, res)=>{
     const {repoName, repoOwner, taskid, prAuthor, prNum, prTitle, prDescription} = req.body;
     
     const task  = await taskModel.findOne({_id: taskid});
-    const assignedUserGhUname = await userModel.findOne({walletID: task.freelancer},{ghUserName:1}).exec();
-
+    let assignedUserGhUname = await userModel.findOne({walletID: task.freelancer},{ghUserName:1}).exec();
+    assignedUserGhUname=assignedUserGhUname.ghUserName;
     if(assignedUserGhUname !== prAuthor){
+        console.log(assignedUserGhUname,prAuthor);
         return res.status(401).json({message: "Unauthorized"});
     }
     const tests = task.testIntegration.visibleTests + "\n" + task.testIntegration.hiddenTests;
@@ -59,7 +60,7 @@ router.post('/task', async (req, res)=>{
         console.log(err);
         return res.status(500).json({message: "Internal Server Error"});
     }
-
+    
     // Call completeTask here
 
     return res.status(200).json({message: "Success"});
