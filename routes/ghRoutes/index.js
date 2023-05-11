@@ -17,8 +17,9 @@ router.get('/task/:taskid', async (req, res)=>{
     const {taskid} = req.params;
 
     const task = await taskModel.findOne({_id: taskid});
+    console.log(task)
     const project = await projectModel.findOne({_id: task.projectID});
-
+    console.log(task,project)
     await task.populate('testIntegration');
     
     let data = {};
