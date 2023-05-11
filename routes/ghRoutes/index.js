@@ -4,6 +4,7 @@ const path = require('path');
 
 const commit = require('../../Integration/commit.js');
 const merge = require('../../Integration/merge.js');
+const close = require('../../Integration/closePull.js');
 
 const Models = require('../../Schema/index.js');
 const IntegrationModel = Models.Integration;
@@ -59,6 +60,18 @@ router.post('/task', async (req, res)=>{
     }
 
     // Call completeTask here
+
+    return res.status(200).json({message: "Success"});
+});
+
+router.patch('/task/:taskid', async (req, res)=>{
+    const {taskid} = req.params;
+    const {prNum, repoName, repoOwner} = req.body;
+
+    const success = await close(repoName, repoOwner, prNum);
+    if(!success){
+        return res.status(500).json({message: "Internal Server Error"});
+    }
 
     return res.status(200).json({message: "Success"});
 });
