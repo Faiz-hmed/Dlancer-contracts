@@ -13,7 +13,7 @@ async function commit(repoName, default_branch ,repoOwner, filePath, fileContent
     const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
 
     let res;
-
+    console.log(default_branch)
     // To get the commmit pointed to by HEAD ref
     res = await octokit.request(`GET /repos/${repoOwner}/${repoName}/git/ref/heads/${String(default_branch)}`, {
         owner: repoOwner,

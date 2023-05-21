@@ -41,6 +41,8 @@ router.post('/task', async (req, res)=>{
     
     const task  = await taskModel.findOne({_id: taskid});
     await task.populate('testIntegration');
+    const project = await projectModel.findById(task.projectID);
+    console.log(project);
     let assignedUserGhUname = await userModel.findOne({walletID: task.freelancer},{ghUserName:1}).exec();
     assignedUserGhUname=assignedUserGhUname.ghUserName;
     if(assignedUserGhUname !== prAuthor){
@@ -51,17 +53,15 @@ router.post('/task', async (req, res)=>{
     const testDestPath = task.testIntegration.testDestPath;
     const testDestFileName = task.testIntegration.testDestFileName;
     // console.log(repoName, repoOwner, testDest, tests);
-    // try {
+    try {
         await merge(repoName, repoOwner, prNum, prTitle, prDescription);
-        console.log(testDestPath, testDestFileName);
         const testDest = path.join(testDestPath, testDestFileName);
-        console.log(repoName, repoOwner, testDest, tests);
-        await commit(repoName, repoOwner, testDest, tests);
-    // }
-    // catch(err){
-    //     console.log(err);
-    //     return res.status(500).json({message: "Internal Server Error"});
-    // }
+        await commit(repoName, 'main', repoOwner, testDest, tests);
+    }
+    catch(err){
+        console.log(err);
+        return res.status(500).json({message: "Internal Server Error"});
+    }
     
     // Call completeTask here
 
