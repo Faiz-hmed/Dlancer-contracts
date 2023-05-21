@@ -23,10 +23,11 @@ router.post('/complete/:taskid', async (req, res)=>{
         }))
         openai.createChatCompletion({
             model:"gpt-3.5-turbo",
-            messages:[{role:"system",content:`Does the code do what the description says and is ir error free? return true or false only:Description:${description} code:${code}`}]
+            messages:[{role:"system",content:`Does the code do what the description says and is ir error free(if there are spelling mistakes or syntax errors return false)? return true or false only:Description:${description} code:${code}`}]
         }).then((resp)=>{
             return resp.data.choices[0].message.content;
         }).then(async (resp)=>{
+            console.log(resp)
             if(resp.toLowerCase().includes('true')){
                 const provider = new ethers.providers.JsonRpcProvider(process.env.GANACHE_RPC);
                 const contract = new ethers.Contract(address, abi, provider);

@@ -107,6 +107,9 @@ const projectSchema = new mongoose.Schema({
         type:String,
         // required:true
     },
+    githubRepo:{
+        type:String,
+    },
     requiredSkills:{
         type: [String],
     },

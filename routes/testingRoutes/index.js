@@ -180,7 +180,7 @@ router.delete('/:projectid', async (req, res) => {
 
 
 router.post('/:projectid', async (req, res) => {                            // create tasks
-  const { employee, contractAddress,name,requiredSkills, hiddenTests, visibleTests, depInstaller, testDest, testDestFile, runner,auto } = req.body;
+  const { employee, contractAddress,name,requiredSkills, hiddenTests, visibleTests, depInstaller, testDest, testDestFile, runner, auto } = req.body;
   try{
     
     let testintegration;

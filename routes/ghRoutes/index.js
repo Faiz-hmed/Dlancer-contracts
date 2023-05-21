@@ -1,6 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const path = require('path');
+const { ethers} = require('hardhat');
+require('dotenv').config();
+const {abi} = require('../../../frontend/constants/index.js')
 
 const commit = require('../../Integration/commit.js');
 const merge = require('../../Integration/merge.js');
@@ -42,7 +45,6 @@ router.post('/task', async (req, res)=>{
     const task  = await taskModel.findOne({_id: taskid});
     await task.populate('testIntegration');
     const project = await projectModel.findById(task.projectID);
-    console.log(project);
     let assignedUserGhUname = await userModel.findOne({walletID: task.freelancer},{ghUserName:1}).exec();
     assignedUserGhUname=assignedUserGhUname.ghUserName;
     if(assignedUserGhUname !== prAuthor){
@@ -56,7 +58,7 @@ router.post('/task', async (req, res)=>{
     try {
         await merge(repoName, repoOwner, prNum, prTitle, prDescription);
         const testDest = path.join(testDestPath, testDestFileName);
-        await commit(repoName, 'main', repoOwner, testDest, tests);
+        await commit(repoName, project.githubDefaultBranch, repoOwner, testDest, tests);
     }
     catch(err){
         console.log(err);
@@ -64,6 +66,16 @@ router.post('/task', async (req, res)=>{
     }
     
     // Call completeTask here
+    const provider = new ethers.providers.JsonRpcProvider(process.env.GANACHE_RPC);
+    const contract = new ethers.Contract(task.contractAddress, abi, provider);
+
+    const privateKey = `0x${process.env.ADMIN_PRIVATE_KEY}`;
+    const signer = new ethers.Wallet(privateKey, provider);
+    const connectedContract = contract.connect(signer);
+    const tx = await connectedContract.completeTask();
+    const receipt = await provider.waitForTransaction(tx.hash);
+    console.log(receipt);
+    if(!receipt) return res.status(500).json({})
 
     return res.status(200).json({message: "Success"});
 });

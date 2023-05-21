@@ -108,6 +108,7 @@ router.post('/:walletID', async (req, res) => {
     // Enpoint to create a new project w/o tasks
 
     //Request Body : {userid, projName, description, skills, tasks, status(0/1/2) }
+
     const {projName,description,skills, repo, branch} = req.body;
 
     const repoName = repo.split('/').at(-1);
@@ -135,6 +136,7 @@ router.post('/:walletID', async (req, res) => {
         return res.status(400).send({ success: false, message: err.message+err.name });
     }
 
+    
     //Save Project to db, and continue if and only if successful && tasks are present
     // if(!tasks)
     //     return res.status(200).send({ success: true, message: 'Project added successfully!' });
