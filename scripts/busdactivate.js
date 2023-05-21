@@ -18,8 +18,8 @@ await busdToken.mint(hirer, ethers.utils.parseUnits("10000"));
 const dep = await hre.ethers.getSigners();
 const amount = ethers.utils.parseUnits("100"); // 100 BUSD tokens in 18 decimal places
 const taskContractAddr = getLatestAddress();
-await busdToken.connect(dep[2]).approve(taskContractAddr, amount);
-
+const res = await busdToken.connect(dep[2]).approve(taskContractAddr, amount);
+console.log(res)
 // const hr = await busdToken.approve(taskContractAddr, amount);
 // const act = await busdToken.allowance(hirer, taskContractAddr);
 // const act = await busdToken.balanceOf(hirer);
@@ -32,7 +32,7 @@ await busdToken.connect(dep[2]).approve(taskContractAddr, amount);
 // Call the activateTask function with BUSD token transfer
 // const taskContract = await ethers.getContractFactory("TaskContract");
 
-const task = await ethers.getContractAt("TaskContract",getLatestAddress(),hirer)
+// const task = await ethers.getContractAt("TaskContract",getLatestAddress(),hirer)
 
 // const task = await taskContract.attach(getLatestAddress());
 // const details = await task.getValues();
@@ -41,8 +41,10 @@ const task = await ethers.getContractAt("TaskContract",getLatestAddress(),hirer)
 // const done = await task.activateTask();
 // const d = await task.getValues()
             
-console.log( await busdToken.balanceOf("0x6E485285C78f3A1d13c7d77a715b295047573A47"));
-console.log(await task.getBalance());
+// console.log( await busdToken.balanceOf("0x6E485285C78f3A1d13c7d77a715b295047573A47"));
+// console.log(await task.getBalance());
+
+
 // const act = await busdToken.allowance(hirer,getLatestAddress());
 // const act = await task.viewReward();
 

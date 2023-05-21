@@ -180,16 +180,16 @@ router.delete('/:projectid', async (req, res) => {
 
 
 router.post('/:projectid', async (req, res) => {                            // create tasks
-  const { employee, contractAddress,name,requiredSkills, hiddenTests, visibleTests, depInstaller, testDest, testDestFile, runner } = req.body;
+  const { employee, contractAddress,name,requiredSkills, hiddenTests, visibleTests, depInstaller, testDest, testDestFile, runner,auto } = req.body;
   try{
     
     let testintegration;
-    if((hiddenTests || visibleTests) && depInstaller && testDest && testDestFile && runner){
+    if(!auto && (hiddenTests || visibleTests) && depInstaller && testDest && testDestFile && runner){
       testintegration = await IntegrationModel.create({dependencyInstallerCmd: depInstaller, testDestPath: testDest, testDestFileName: testDestFile, testRunnerCmd: runner, hiddenTests: hiddenTests, visibleTests: visibleTests});
     }
 
     const projectid = new mongoose.Types.ObjectId(req.params.projectid);
-        const newTask = new taskModel({projectID:projectid,taskName:name,freelancer:employee,contractAddress:contractAddress,requiredSkills:requiredSkills, testIntegration: testintegration?.id});
+        const newTask = new taskModel({projectID:projectid,taskName:name,freelancer:employee,contractAddress:contractAddress,requiredSkills:requiredSkills, testIntegration: testintegration?.id,auto:auto});
         await newTask.save()
         projectModel.findById(req.params.projectid).then(async (project)=>{
           project.tasks.push(newTask._id);

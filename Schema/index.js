@@ -161,6 +161,10 @@ const tasksSchema = new mongoose.Schema({
         type: mongoose.SchemaTypes.ObjectId,
         ref: 'Integration'
         // required: true
+    },
+    auto:{
+        type: Boolean,
+        default: false
     }
 });
 
