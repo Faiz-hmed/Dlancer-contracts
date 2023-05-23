@@ -75,6 +75,9 @@ router.post('/task', async (req, res)=>{
     const tx = await connectedContract.completeTask();
     const receipt = await provider.waitForTransaction(tx.hash);
     console.log(receipt);
+    const user  = await userModel.findOne({walletID:task.freelancer});
+    user.tasksCompleted.push(task._id);
+    user.save();
     if(!receipt) return res.status(500).json({})
 
     return res.status(200).json({message: "Success"});

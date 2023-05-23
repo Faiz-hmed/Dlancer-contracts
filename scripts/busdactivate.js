@@ -14,6 +14,8 @@ const busdToken = await busdContract.attach(getBusdAddress());
 await busdToken.mint(deployer, ethers.utils.parseUnits("10000"));
 await busdToken.mint(freelancer,ethers.utils.parseUnits("10000"));
 await busdToken.mint(hirer, ethers.utils.parseUnits("10000"));
+await busdToken.mint('0xc4A99A4854c23164193b22e52ec5D984929e40Cc',ethers.utils.parseUnits("10000"));
+await busdToken.mint('0x8622E8284CE2565D7c5B44413F468353DF1fB81C', ethers.utils.parseUnits("10000"));
 
 const dep = await hre.ethers.getSigners();
 const amount = ethers.utils.parseUnits("100"); // 100 BUSD tokens in 18 decimal places

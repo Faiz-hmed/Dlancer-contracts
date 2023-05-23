@@ -213,7 +213,7 @@ router.get('/:projectid', async (req, res) => {
 
 router.get('/gettask/:taskid', async (req, res) => {
     try{
-        const task = await taskModel.findById(req.params.taskid);
+        const task = await taskModel.findById(req.params.taskid).populate('testIntegration');
         res.status(200).json(task);
         }catch(e){
             res.status(500).json({success:false,message:e.message});

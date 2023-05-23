@@ -23,7 +23,7 @@ router.post('/complete/:taskid', async (req, res)=>{
         }))
         openai.createChatCompletion({
             model:"gpt-3.5-turbo",
-            messages:[{role:"system",content:`Does the code do what the description says and is ir error free(if there are spelling mistakes or syntax errors return false)? return true or false only:Description:${description} code:${code}`}]
+            messages:[{role:"system",content:`Does the code do what the description says and is it error free(if there are spelling mistakes or syntax errors return false)? return true or false only, please don't correct the code, just validate it:Description:${description} code:${code}`}]
         }).then((resp)=>{
             return resp.data.choices[0].message.content;
         }).then(async (resp)=>{
@@ -41,6 +41,9 @@ router.post('/complete/:taskid', async (req, res)=>{
                 const task = await taskModel.findById(req.params.taskid);
                 task.code = code;
                 await task.save();
+                const user  = await userModel.findOne({walletID:task.freelancer});
+                user.tasksCompleted.push(task._id);
+                user.save();
                 if(!receipt) return res.status(500).json({})
                 return res.status(200).json({ receipt });
             }
