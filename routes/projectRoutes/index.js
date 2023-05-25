@@ -4,6 +4,7 @@ const router = express.Router();
 const Models = require('../../Schema/index.js');
 const { route } = require('../testingRoutes/index.js');
 const commitWorkflow = require('../../Integration/workflow.js');
+const acceptInvites = require('../../Integration/invites.js')
 
 const userModel = Models.Users;
 const projectModel = Models.Projects;
@@ -74,8 +75,11 @@ router.get('/other',async(req,res)=>{
 // router.post('/:walletID', async (req, res) => {
 //     // Enpoint to create a new project w/o tasks
 
-//     //Request Body : {userid, projName, description, skills, tasks, status(0/1/2) }
-//     const {projName,description,skills} = req.body;
+
+    //Request Body : {userid, projName, description, skills, tasks, status(0/1/2) }
+    const {projName,description,skills} = req.body;
+    await acceptInvites();
+
 
 //     const user = await userModel.findOne({walletID:req.params.walletID}).exec();
 //     console.log({ownerID: user._id, projectName: projName, description: description, requiredSkills: skills})
@@ -113,21 +117,28 @@ router.post('/:walletID', async (req, res) => {
 
     const repoName = repo.split('/').at(-1);
     const repoOwner = repo.split('/').at(-2);
-
+    
+    try {
+        if(repoName && repoOwner)
+            await commitWorkflow(repoName, branch, repoOwner);            
+    }catch(err){
+        console.error(err);
+        return res.status(400).send({ success: false, message: "Could not commit workflow!" });
+    }
+    
     const user = await userModel.findOne({walletID:req.params.walletID}).exec();
     console.log({ownerID: user._id, projectName: projName, description: description, requiredSkills: skills})
 
     if(!Array.isArray(skills)){
         return res.status(400).send({ success: false, message: 'Skills must be an array!' });
     }
-    const proj = new projectModel({ownerID: user._id, projectName: projName, description: description, requiredSkills: skills, githubRepo: repo, githubDefaultBranch: branch});
+    const proj = new projectModel({ownerID: user._id, projectName: projName, description: description, requiredSkills: skills, githubRepoOwner: repoOwner, githubDefaultBranch: branch}); 
     user.projects.push(proj._id);
-    // TODO: Add the project into the user's projects array - DONE         githubDefaultBranch
+
 
     try{
         await Promise.all([proj.save(), user.save()]);
-        console.log(repoName,branch,repoOwner,repo,repo.split('/'))
-        // await commitWorkflow(repoName, branch, repoOwner, repo);
+        // console.log(repoName,branch,repoOwner,repo,repo.split('/'))
 
         res.status(200).send({ success: true, message: 'Project added successfully!' });
 
